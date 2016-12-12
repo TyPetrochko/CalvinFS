@@ -33,7 +33,7 @@ const string& ClusterManager::ssh_key(uint64 m) {
 }
 
 void* SystemFunction(void* arg) {
-  // Run the specified command.
+  // Run the specified command
   int status = system(reinterpret_cast<string*>(arg)->c_str());
   if(status == -1){
     LOG(FATAL)<<"system error";
