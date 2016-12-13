@@ -899,7 +899,7 @@ void MetadataStore::Rename_Internal(
   to_machine = LookupReplicaByDir(to);
 
   LOG(ERROR) << "Rename " << from << " --> " << to << " is on replicas "
-    << from << " --> " << to;
+    << from_machine << " --> " << to_machine;
 
   MetadataEntry from_entry;
   if (!context->GetEntry(in.from_path(), &from_entry)) {
