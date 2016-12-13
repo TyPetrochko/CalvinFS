@@ -888,6 +888,18 @@ void MetadataStore::Rename_Internal(
     const MetadataAction::RenameInput& in,
     MetadataAction::RenameOutput* out) {
   // Currently only support Copy: (non-recursive: only succeeds for DATA files and EMPTY directory)
+  
+  string from, to;
+  uint32 from_machine, to_machine;
+
+  from = in.from_path();
+  to = in.to_path();
+
+  from_machine = LookupReplicaByDir(from);
+  to_machine = LookupReplicaByDir(to);
+
+  LOG(ERROR) << "Rename " << from << " --> " << to << " is on replicas "
+    << from << " --> " << to;
 
   MetadataEntry from_entry;
   if (!context->GetEntry(in.from_path(), &from_entry)) {
