@@ -148,6 +148,7 @@ int main(int argc, char** argv) {
   m.AddApp("CalvinFSClientApp", "client");
 
   LOG(ERROR) << "[" << FLAGS_machine_id << "] created CalvinFSClientApp";
+  LOG(ERROR) << "LOCAL PERCENTAGE: " << FLAGS_local_percentage;
   reinterpret_cast<CalvinFSClientApp*>(m.GetApp("client"))
       ->set_start_time(FLAGS_time);
   reinterpret_cast<CalvinFSClientApp*>(m.GetApp("client"))
