@@ -68,6 +68,7 @@ class ExecutionContext {
   // Constructor performs all reads.
   ExecutionContext(VersionedKVStore* store, Action* action)
       : store_(store), version_(action->version()), aborted_(false) {
+        LOG(ERROR) << "Made a local execution context!";
     for (int i = 0; i < action->readset_size(); i++) {
       if (!store_->Get(action->readset(i),
                        version_,
@@ -175,7 +176,7 @@ class DistributedExecutionContext : public ExecutionContext {
     origin_ = action->origin();
 
     data_channel_version = action->distinct_id();
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
+    LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     // Look up what replica we're at.
     replica_ = config_->LookupReplica(machine_->machine_id());
 
