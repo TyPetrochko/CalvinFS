@@ -273,9 +273,6 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
 }
 
 MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice& to_path) {
-  LOG(ERROR) << "Machine " << machine()->machine_id() << " at location "
-    << machine()->GetGUID() << " got a request to rename " << from_path 
-    << " --> " << to_path;
   uint64 distinct_id = machine()->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
   auto channel = machine()->DataChannel(channel_name);
@@ -314,7 +311,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   }
 
 //LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::RenameFile completed ^^^^^^  distinct id is:"<<distinct_id;
-  machine()->CloseDataChannel(channel_name);
+  //machine()->CloseDataChannel(channel_name);
 
   Action result;
   result.ParseFromArray((*m)[0].data(), (*m)[0].size());
