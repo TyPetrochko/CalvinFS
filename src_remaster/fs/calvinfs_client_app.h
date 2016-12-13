@@ -1012,7 +1012,10 @@ void LatencyExperimentRenameFile(int local_percentage) {
   void set_start_time(double t) { start_time_ = t; }
   double start_time_;
 
-  void set_experiment(int e, int c, int l) {experiment = e; kMaxCapacity = c; local_percentage = l;}
+  void set_experiment(int e, int c, int l) {
+    LOG(ERROR) << "Setting local percentage to " << local_percentage;
+    experiment = e; kMaxCapacity = c; local_percentage = l;
+  }
   int experiment;
   int kMaxCapacity;
   int local_percentage;
