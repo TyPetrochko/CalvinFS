@@ -1,5 +1,5 @@
 ../obj/machine/app/reporter.o: machine/app/reporter.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/machine/app/reporter.h \
+ /usr/include/stdc-predef.h ../src_remaster/machine/app/reporter.h \
  ../ext/glog/include/glog/logging.h /usr/include/errno.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -124,8 +124,7 @@
  /usr/include/c++/4.8/bits/stl_relops.h /usr/include/c++/4.8/array \
  /usr/include/c++/4.8/stdexcept \
  /usr/include/c++/4.8/bits/uses_allocator.h \
- /usr/include/c++/4.8/bits/stl_multimap.h \
- ../src_lowlatency/common/utils.h \
+ /usr/include/c++/4.8/bits/stl_multimap.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
@@ -135,7 +134,7 @@
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
+ ../src_remaster/common/types.h /usr/include/c++/4.8/iostream \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
@@ -196,15 +195,14 @@
  ../ext/protobuf/src/google/protobuf/extension_set.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/machine/app/app.h /usr/include/c++/4.8/atomic \
+ ../src_remaster/machine/app/app.h /usr/include/c++/4.8/atomic \
  /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/queue \
+ ../src_remaster/common/atomic.h /usr/include/c++/4.8/queue \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h /usr/include/c++/4.8/random \
  /usr/include/c++/4.8/cmath /usr/include/c++/4.8/bits/random.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/opt_random.h \
@@ -218,14 +216,13 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/fxsrintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
- /usr/include/c++/4.8/bits/stl_numeric.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../src_lowlatency/machine/machine.h \
- ../src_lowlatency/machine/cluster_config.h \
+ /usr/include/c++/4.8/bits/stl_numeric.h ../src_remaster/btree/btree.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
+ ../src_remaster/machine/machine.h \
+ ../src_remaster/machine/cluster_config.h \
  ../obj/proto/cluster_config.pb.h ../obj/proto/header.pb.h \
  ../obj/proto/scalar.pb.h ../obj/proto/start_app.pb.h \
- ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
- ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../src_lowlatency/machine/message_handler.h \
- ../obj/proto/report.pb.h
+ ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/machine/connection/zmq_cpp.h ../ext/zeromq/include/zmq.h \
+ /usr/include/c++/4.8/cassert /usr/include/c++/4.8/cstring \
+ ../src_remaster/machine/message_handler.h ../obj/proto/report.pb.h

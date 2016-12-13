@@ -1,5 +1,5 @@
 ../obj/fs/hdfs.o: fs/hdfs.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/fs/hdfs.h ../src_lowlatency/common/types.h \
+ ../src_remaster/fs/hdfs.h ../src_remaster/common/types.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -104,7 +104,7 @@
  /usr/include/c++/4.8/bits/istream.tcc \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string3.h \
- ../src_lowlatency/fs/fs.h ../ext/glog/include/glog/logging.h \
+ ../src_remaster/fs/fs.h ../ext/glog/include/glog/logging.h \
  /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
  /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
@@ -119,7 +119,7 @@
  /usr/include/c++/4.8/bits/stl_bvector.h \
  /usr/include/c++/4.8/bits/vector.tcc /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h ../src_lowlatency/common/utils.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
@@ -193,4 +193,4 @@
  /usr/include/c++/4.8/bits/stl_multimap.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/fs/status.h
+ ../src_remaster/fs/status.h

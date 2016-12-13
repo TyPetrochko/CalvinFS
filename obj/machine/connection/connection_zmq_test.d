@@ -1,6 +1,6 @@
 ../obj/machine/connection/connection_zmq_test.o: \
  machine/connection/connection_zmq_test.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/machine/connection/connection_zmq.h \
+ ../src_remaster/machine/connection/connection_zmq.h \
  /usr/include/c++/4.8/map /usr/include/c++/4.8/bits/stl_tree.h \
  /usr/include/c++/4.8/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
@@ -98,10 +98,9 @@
  /usr/include/c++/4.8/bits/basic_string.tcc \
  /usr/include/c++/4.8/bits/uses_allocator.h \
  /usr/include/c++/4.8/bits/stl_multimap.h \
- ../src_lowlatency/machine/cluster_config.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/bits/ios_base.h \
+ ../src_remaster/machine/cluster_config.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
  /usr/include/c++/4.8/bits/locale_classes.tcc \
  /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
@@ -180,11 +179,10 @@
  /usr/include/c++/4.8/bits/stream_iterator.h \
  ../ext/protobuf/src/google/protobuf/stubs/casts.h \
  ../ext/protobuf/src/google/protobuf/extension_set.h \
- ../src_lowlatency/machine/connection/connection.h \
- ../obj/proto/header.pb.h \
+ ../src_remaster/machine/connection/connection.h ../obj/proto/header.pb.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../obj/proto/scalar.pb.h ../src_lowlatency/machine/connection/zmq_cpp.h \
+ ../obj/proto/scalar.pb.h ../src_remaster/machine/connection/zmq_cpp.h \
  ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/algorithm \
  /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h \
@@ -211,7 +209,7 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
  /usr/include/c++/4.8/bits/stl_numeric.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../src_lowlatency/machine/message_buffer.h \
+ /usr/include/c++/4.8/cstring ../src_remaster/machine/message_buffer.h \
  ../ext/glog/include/glog/logging.h /usr/include/c++/4.8/sstream \
  /usr/include/c++/4.8/bits/sstream.tcc /usr/include/unistd.h \
  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -219,14 +217,13 @@
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h ../src_lowlatency/common/atomic.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/common/atomic.h \
  /usr/include/c++/4.8/queue /usr/include/c++/4.8/deque \
  /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../src_lowlatency/common/utils.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ ../src_remaster/btree/btree.h ../src_remaster/btree/btree_container.h \
+ ../src_remaster/common/mutex.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h ../obj/proto/scalar.pb.h \
  ../ext/gtest/include/gtest/gtest.h \
  ../ext/gtest/include/gtest/internal/gtest-internal.h \

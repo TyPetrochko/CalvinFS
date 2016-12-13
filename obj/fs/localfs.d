@@ -1,5 +1,5 @@
 ../obj/fs/localfs.o: fs/localfs.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/fs/localfs.h /usr/include/c++/4.8/atomic \
+ ../src_remaster/fs/localfs.h /usr/include/c++/4.8/atomic \
  /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
@@ -92,7 +92,7 @@
  /usr/include/c++/4.8/bits/basic_string.tcc \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string3.h \
- ../src_lowlatency/common/mutex.h ../ext/glog/include/glog/logging.h \
+ ../src_remaster/common/mutex.h ../ext/glog/include/glog/logging.h \
  /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
  /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
@@ -122,11 +122,10 @@
  /usr/include/c++/4.8/bits/stl_bvector.h \
  /usr/include/c++/4.8/bits/vector.tcc /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h ../src_lowlatency/common/types.h \
- /usr/include/c++/4.8/iostream ../src_lowlatency/fs/fs.h \
- ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream ../src_remaster/fs/fs.h \
+ ../src_remaster/common/utils.h /usr/include/x86_64-linux-gnu/sys/time.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -198,5 +197,5 @@
  /usr/include/c++/4.8/bits/stl_multimap.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/fs/status.h ../ext/leveldb/include/leveldb/env.h \
+ ../src_remaster/fs/status.h ../ext/leveldb/include/leveldb/env.h \
  /usr/include/c++/4.8/cstdarg

@@ -1,5 +1,5 @@
 ../obj/common/vec_test.o: common/vec_test.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/common/vec.h /usr/include/c++/4.8/vector \
+ ../src_remaster/common/vec.h /usr/include/c++/4.8/vector \
  /usr/include/c++/4.8/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \

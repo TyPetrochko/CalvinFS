@@ -1,5 +1,5 @@
 ../obj/common/mutex_test.o: common/mutex_test.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/common/mutex.h \
+ /usr/include/stdc-predef.h ../src_remaster/common/mutex.h \
  /usr/include/pthread.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -169,9 +169,8 @@
  ../ext/gtest/include/gtest/gtest_pred_impl.h /usr/include/c++/4.8/atomic \
  /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
- ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ ../src_remaster/common/utils.h /usr/include/x86_64-linux-gnu/sys/time.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -179,7 +178,7 @@
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- ../src_lowlatency/common/types.h ../ext/leveldb/include/leveldb/slice.h \
+ ../src_remaster/common/types.h ../ext/leveldb/include/leveldb/slice.h \
  ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
  ../ext/protobuf/src/google/protobuf/stubs/port.h \

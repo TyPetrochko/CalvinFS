@@ -1,8 +1,7 @@
 ../obj/machine/thread_pool/thread_pool.o: \
  machine/thread_pool/thread_pool.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/machine/thread_pool/thread_pool.h \
- /usr/include/pthread.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+ ../src_remaster/machine/thread_pool/thread_pool.h /usr/include/pthread.h \
+ /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h /usr/include/endian.h \
@@ -54,8 +53,8 @@
  /usr/include/c++/4.8/bits/range_access.h \
  /usr/include/c++/4.8/bits/vector.tcc /usr/include/c++/4.8/utility \
  /usr/include/c++/4.8/bits/stl_relops.h \
- ../src_lowlatency/machine/message_handler.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/map \
+ ../src_remaster/machine/message_handler.h \
+ ../src_remaster/common/atomic.h /usr/include/c++/4.8/map \
  /usr/include/c++/4.8/bits/stl_tree.h \
  /usr/include/c++/4.8/bits/stl_function.h \
  /usr/include/c++/4.8/backward/binders.h \
@@ -107,9 +106,8 @@
  /usr/include/c++/4.8/bits/stl_multimap.h /usr/include/c++/4.8/queue \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h \
  /usr/include/c++/4.8/bits/stl_tempbuf.h /usr/include/c++/4.8/random \
  /usr/include/c++/4.8/cmath /usr/include/math.h \
@@ -140,7 +138,7 @@
  /usr/include/c++/4.8/bits/unique_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr_base.h \
- /usr/include/c++/4.8/backward/auto_ptr.h ../src_lowlatency/btree/btree.h \
+ /usr/include/c++/4.8/backward/auto_ptr.h ../src_remaster/btree/btree.h \
  /usr/include/assert.h /usr/include/string.h \
  /usr/include/x86_64-linux-gnu/bits/string3.h \
  /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
@@ -159,16 +157,16 @@
  /usr/include/c++/4.8/bits/ostream.tcc /usr/include/c++/4.8/istream \
  /usr/include/c++/4.8/bits/istream.tcc /usr/include/c++/4.8/iterator \
  /usr/include/c++/4.8/bits/stream_iterator.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../ext/glog/include/glog/logging.h \
- /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
+ ../ext/glog/include/glog/logging.h /usr/include/c++/4.8/sstream \
+ /usr/include/c++/4.8/bits/sstream.tcc /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h ../src_lowlatency/common/types.h \
- ../ext/leveldb/include/leveldb/slice.h ../src_lowlatency/common/utils.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/common/types.h \
+ ../ext/leveldb/include/leveldb/slice.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
  ../ext/protobuf/src/google/protobuf/stubs/port.h \
@@ -220,8 +218,7 @@
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
  /usr/include/c++/4.8/atomic /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
- ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
- ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../obj/proto/header.pb.h \
- ../obj/proto/scalar.pb.h
+ ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/machine/connection/zmq_cpp.h ../ext/zeromq/include/zmq.h \
+ /usr/include/c++/4.8/cassert /usr/include/c++/4.8/cstring \
+ ../obj/proto/header.pb.h ../obj/proto/scalar.pb.h

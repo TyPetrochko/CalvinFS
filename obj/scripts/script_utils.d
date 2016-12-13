@@ -1,5 +1,5 @@
 ../obj/scripts/script_utils.o: scripts/script_utils.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/scripts/script_utils.h \
+ /usr/include/stdc-predef.h ../src_remaster/scripts/script_utils.h \
  /usr/include/c++/4.8/string \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \

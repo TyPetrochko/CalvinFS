@@ -1,5 +1,5 @@
 ../obj/fs/fs_test.o: fs/fs_test.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/fs/fs.h ../ext/glog/include/glog/logging.h \
+ ../src_remaster/fs/fs.h ../ext/glog/include/glog/logging.h \
  /usr/include/errno.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -118,9 +118,9 @@
  /usr/include/c++/4.8/bits/stl_bvector.h \
  /usr/include/c++/4.8/bits/vector.tcc /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h ../src_lowlatency/common/types.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/common/types.h \
  /usr/include/c++/4.8/iostream ../ext/leveldb/include/leveldb/slice.h \
- /usr/include/assert.h ../src_lowlatency/common/utils.h \
+ /usr/include/assert.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
@@ -194,17 +194,16 @@
  /usr/include/c++/4.8/bits/stl_multimap.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/fs/status.h ../src_lowlatency/fs/localfs.h \
+ ../src_remaster/fs/status.h ../src_remaster/fs/localfs.h \
  /usr/include/c++/4.8/atomic /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
- ../ext/leveldb/include/leveldb/status.h ../src_lowlatency/common/mutex.h \
- ../src_lowlatency/fs/hdfs.h ../src_lowlatency/fs/calvinfs.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/queue \
+ ../ext/leveldb/include/leveldb/status.h ../src_remaster/common/mutex.h \
+ ../src_remaster/fs/hdfs.h ../src_remaster/fs/calvinfs.h \
+ ../src_remaster/common/atomic.h /usr/include/c++/4.8/queue \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h /usr/include/c++/4.8/random \
  /usr/include/c++/4.8/cmath /usr/include/c++/4.8/bits/random.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/opt_random.h \
@@ -218,9 +217,9 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/fxsrintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
- /usr/include/c++/4.8/bits/stl_numeric.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h ../obj/fs/calvinfs_config.pb.h \
- ../src_lowlatency/common/source.h ../ext/gflags/include/gflags/gflags.h \
+ /usr/include/c++/4.8/bits/stl_numeric.h ../src_remaster/btree/btree.h \
+ ../src_remaster/btree/btree_container.h ../obj/fs/calvinfs_config.pb.h \
+ ../src_remaster/common/source.h ../ext/gflags/include/gflags/gflags.h \
  ../ext/gflags/include/gflags/gflags_declare.h \
  ../ext/gtest/include/gtest/gtest.h \
  ../ext/gtest/include/gtest/internal/gtest-internal.h \

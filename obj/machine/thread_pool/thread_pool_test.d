@@ -200,25 +200,25 @@
  /usr/include/c++/4.8/tuple /usr/include/c++/4.8/array \
  /usr/include/c++/4.8/stdexcept \
  /usr/include/c++/4.8/bits/uses_allocator.h \
- ../src_lowlatency/machine/thread_pool/thread_pool.h \
- ../src_lowlatency/machine/message_handler.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/map \
+ ../src_remaster/machine/thread_pool/thread_pool.h \
+ ../src_remaster/machine/message_handler.h \
+ ../src_remaster/common/atomic.h /usr/include/c++/4.8/map \
  /usr/include/c++/4.8/bits/stl_map.h \
  /usr/include/c++/4.8/bits/stl_multimap.h /usr/include/c++/4.8/queue \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/memory \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/memory \
  /usr/include/c++/4.8/bits/stl_raw_storage_iter.h \
  /usr/include/c++/4.8/ext/concurrence.h \
  /usr/include/c++/4.8/bits/unique_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr_base.h \
- /usr/include/c++/4.8/backward/auto_ptr.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../src_lowlatency/common/types.h \
- ../ext/leveldb/include/leveldb/slice.h ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h ../obj/proto/scalar.pb.h \
+ /usr/include/c++/4.8/backward/auto_ptr.h ../src_remaster/btree/btree.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
+ ../src_remaster/common/types.h ../ext/leveldb/include/leveldb/slice.h \
+ ../src_remaster/common/utils.h /usr/include/x86_64-linux-gnu/sys/time.h \
+ ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
  ../ext/protobuf/src/google/protobuf/stubs/port.h \
  /usr/include/c++/4.8/cstddef /usr/include/x86_64-linux-gnu/sys/param.h \
@@ -259,7 +259,6 @@
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
  ../obj/proto/header.pb.h ../obj/proto/scalar.pb.h \
- ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
- ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring
+ ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/machine/connection/zmq_cpp.h ../ext/zeromq/include/zmq.h \
+ /usr/include/c++/4.8/cassert /usr/include/c++/4.8/cstring

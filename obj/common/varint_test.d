@@ -1,5 +1,5 @@
 ../obj/common/varint_test.o: common/varint_test.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/common/varint.h \
+ /usr/include/stdc-predef.h ../src_remaster/common/varint.h \
  /usr/include/c++/4.8/string \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
@@ -90,7 +90,7 @@
  /usr/include/c++/4.8/bits/functional_hash.h \
  /usr/include/c++/4.8/bits/hash_bytes.h \
  /usr/include/c++/4.8/bits/basic_string.tcc \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
+ ../src_remaster/common/types.h /usr/include/c++/4.8/iostream \
  /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
  /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \

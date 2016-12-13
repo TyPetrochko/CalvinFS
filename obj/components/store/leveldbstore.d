@@ -1,6 +1,6 @@
 ../obj/components/store/leveldbstore.o: components/store/leveldbstore.cc \
  /usr/include/stdc-predef.h \
- ../src_lowlatency/components/store/leveldbstore.h \
+ ../src_remaster/components/store/leveldbstore.h \
  ../ext/leveldb/include/leveldb/db.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -96,11 +96,10 @@
  /usr/include/c++/4.8/bits/basic_string.tcc \
  ../ext/leveldb/include/leveldb/status.h \
  ../ext/leveldb/include/leveldb/options.h \
- ../src_lowlatency/components/store/kvstore.h \
- ../src_lowlatency/components/store/store.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/bits/ios_base.h \
+ ../src_remaster/components/store/kvstore.h \
+ ../src_remaster/components/store/store.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
  /usr/include/c++/4.8/bits/locale_classes.tcc \
  /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
@@ -130,8 +129,8 @@
  ../ext/glog/include/glog/log_severity.h \
  ../ext/glog/include/glog/vlog_is_on.h \
  ../ext/leveldb/include/leveldb/env.h /usr/include/c++/4.8/cstdarg \
- ../src_lowlatency/components/store/store_app.h \
- ../src_lowlatency/machine/app/app.h \
+ ../src_remaster/components/store/store_app.h \
+ ../src_remaster/machine/app/app.h \
  ../ext/protobuf/src/google/protobuf/message.h \
  ../ext/protobuf/src/google/protobuf/stubs/type_traits.h \
  /usr/include/c++/4.8/cstddef /usr/include/c++/4.8/utility \
@@ -185,13 +184,12 @@
  /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
  /usr/include/c++/4.8/map /usr/include/c++/4.8/bits/stl_map.h \
- /usr/include/c++/4.8/bits/stl_multimap.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/queue \
- /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
+ /usr/include/c++/4.8/bits/stl_multimap.h ../src_remaster/common/atomic.h \
+ /usr/include/c++/4.8/queue /usr/include/c++/4.8/deque \
+ /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h /usr/include/c++/4.8/random \
  /usr/include/c++/4.8/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
@@ -214,12 +212,12 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/fxsrintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
- /usr/include/c++/4.8/bits/stl_numeric.h ../src_lowlatency/btree/btree.h \
+ /usr/include/c++/4.8/bits/stl_numeric.h ../src_remaster/btree/btree.h \
  /usr/include/c++/4.8/iterator \
  /usr/include/c++/4.8/bits/stream_iterator.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h ../obj/proto/scalar.pb.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
+ ../src_remaster/common/utils.h /usr/include/x86_64-linux-gnu/sys/time.h \
+ ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/arenastring.h \
  ../ext/protobuf/src/google/protobuf/stubs/fastmem.h \
  ../ext/protobuf/src/google/protobuf/generated_message_util.h \
@@ -231,12 +229,12 @@
  ../ext/protobuf/src/google/protobuf/extension_set.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/machine/machine.h \
- ../src_lowlatency/machine/cluster_config.h \
+ ../src_remaster/machine/machine.h \
+ ../src_remaster/machine/cluster_config.h \
  ../obj/proto/cluster_config.pb.h ../obj/proto/header.pb.h \
  ../obj/proto/scalar.pb.h ../obj/proto/start_app.pb.h \
- ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
- ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../src_lowlatency/machine/message_handler.h \
- ../obj/proto/report.pb.h ../obj/proto/action.pb.h
+ ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/machine/connection/zmq_cpp.h ../ext/zeromq/include/zmq.h \
+ /usr/include/c++/4.8/cassert /usr/include/c++/4.8/cstring \
+ ../src_remaster/machine/message_handler.h ../obj/proto/report.pb.h \
+ ../obj/proto/action.pb.h

@@ -1,6 +1,6 @@
 ../obj/components/store/versioned_kvstore.o: \
  components/store/versioned_kvstore.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/components/store/versioned_kvstore.h \
+ ../src_remaster/components/store/versioned_kvstore.h \
  /usr/include/c++/4.8/string \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
@@ -91,7 +91,7 @@
  /usr/include/c++/4.8/bits/functional_hash.h \
  /usr/include/c++/4.8/bits/hash_bytes.h \
  /usr/include/c++/4.8/bits/basic_string.tcc \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
+ ../src_remaster/common/types.h /usr/include/c++/4.8/iostream \
  /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
  /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
@@ -109,8 +109,8 @@
  /usr/include/c++/4.8/bits/istream.tcc \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string3.h \
- ../src_lowlatency/components/store/kvstore.h \
- ../src_lowlatency/components/store/store.h ../obj/proto/action.pb.h \
+ ../src_remaster/components/store/kvstore.h \
+ ../src_remaster/components/store/store.h ../obj/proto/action.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
  ../ext/protobuf/src/google/protobuf/stubs/port.h \
  /usr/include/c++/4.8/cstddef /usr/include/x86_64-linux-gnu/sys/param.h \
@@ -194,8 +194,7 @@
  ../ext/leveldb/include/leveldb/db.h \
  ../ext/leveldb/include/leveldb/iterator.h \
  ../ext/leveldb/include/leveldb/status.h \
- ../ext/leveldb/include/leveldb/options.h \
- ../src_lowlatency/common/utils.h \
+ ../ext/leveldb/include/leveldb/options.h ../src_remaster/common/utils.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
@@ -205,8 +204,8 @@
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h ../obj/proto/scalar.pb.h \
- ../src_lowlatency/components/store/btreestore.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
+ ../src_remaster/components/store/btreestore.h \
+ ../src_remaster/btree/btree_map.h /usr/include/c++/4.8/algorithm \
  /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h \
  /usr/include/c++/4.8/bits/stl_heap.h /usr/include/c++/4.8/random \
@@ -222,7 +221,6 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/fxsrintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
- /usr/include/c++/4.8/bits/stl_numeric.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h \
+ /usr/include/c++/4.8/bits/stl_numeric.h ../src_remaster/btree/btree.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
  ../obj/components/store/versioned_kvstore.pb.h

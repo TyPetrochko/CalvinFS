@@ -1,5 +1,5 @@
 ../obj/common/utils_test.o: common/utils_test.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/common/utils.h \
+ /usr/include/stdc-predef.h ../src_remaster/common/utils.h \
  ../ext/glog/include/glog/logging.h /usr/include/errno.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -128,7 +128,7 @@
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
+ ../src_remaster/common/types.h /usr/include/c++/4.8/iostream \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
@@ -228,4 +228,4 @@
  ../ext/gtest/include/gtest/gtest-test-part.h \
  ../ext/gtest/include/gtest/gtest-typed-test.h \
  ../ext/gtest/include/gtest/gtest_pred_impl.h \
- ../src_lowlatency/common/vec.h
+ ../src_remaster/common/vec.h

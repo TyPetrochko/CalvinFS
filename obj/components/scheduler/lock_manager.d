@@ -1,6 +1,6 @@
 ../obj/components/scheduler/lock_manager.o: \
  components/scheduler/lock_manager.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/components/scheduler/lock_manager.h \
+ ../src_remaster/components/scheduler/lock_manager.h \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
@@ -130,6 +130,6 @@
  /usr/include/c++/4.8/tr1/functional_hash.h \
  /usr/include/c++/4.8/tr1/hashtable.h \
  /usr/include/c++/4.8/tr1/hashtable_policy.h \
- /usr/include/c++/4.8/tr1/unordered_map.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
- ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h
+ /usr/include/c++/4.8/tr1/unordered_map.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream ../ext/leveldb/include/leveldb/slice.h \
+ /usr/include/assert.h

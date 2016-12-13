@@ -118,9 +118,9 @@
  /usr/include/c++/4.8/bits/stl_bvector.h \
  /usr/include/c++/4.8/bits/vector.tcc /usr/include/inttypes.h \
  ../ext/glog/include/glog/log_severity.h \
- ../ext/glog/include/glog/vlog_is_on.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/utility /usr/include/c++/4.8/bits/stl_relops.h \
+ ../ext/glog/include/glog/vlog_is_on.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/utility \
+ /usr/include/c++/4.8/bits/stl_relops.h \
  /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h \
  /usr/include/c++/4.8/bits/stl_heap.h \
@@ -155,15 +155,13 @@
  /usr/include/c++/4.8/bits/unique_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr.h \
  /usr/include/c++/4.8/bits/shared_ptr_base.h \
- /usr/include/c++/4.8/backward/auto_ptr.h ../src_lowlatency/btree/btree.h \
+ /usr/include/c++/4.8/backward/auto_ptr.h ../src_remaster/btree/btree.h \
  /usr/include/assert.h /usr/include/c++/4.8/iostream \
  /usr/include/c++/4.8/iterator \
  /usr/include/c++/4.8/bits/stream_iterator.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h \
- ../src_lowlatency/common/types.h ../ext/leveldb/include/leveldb/slice.h \
- ../obj/proto/scalar.pb.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/utils.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h ../src_remaster/common/types.h \
+ ../ext/leveldb/include/leveldb/slice.h ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
  ../ext/protobuf/src/google/protobuf/stubs/port.h \
  /usr/include/c++/4.8/cstddef /usr/include/x86_64-linux-gnu/sys/param.h \
@@ -215,7 +213,7 @@
  /usr/include/c++/4.8/bits/stl_multimap.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/components/store/kvstore.h \
- ../src_lowlatency/components/store/store.h \
+ ../src_remaster/components/store/kvstore.h \
+ ../src_remaster/components/store/store.h \
  ../obj/components/store/kvstore.pb.h ../obj/proto/action.pb.h \
  ../obj/proto/scalar.pb.h

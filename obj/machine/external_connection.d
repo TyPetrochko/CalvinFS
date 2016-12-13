@@ -102,8 +102,8 @@
  /usr/include/c++/4.8/bits/stl_vector.h \
  /usr/include/c++/4.8/bits/stl_bvector.h \
  /usr/include/c++/4.8/bits/vector.tcc \
- ../src_lowlatency/machine/external_connection.h \
- ../src_lowlatency/common/utils.h ../ext/glog/include/glog/logging.h \
+ ../src_remaster/machine/external_connection.h \
+ ../src_remaster/common/utils.h ../ext/glog/include/glog/logging.h \
  /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string3.h \
  /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
  /usr/include/c++/4.8/bits/ios_base.h \
@@ -136,7 +136,7 @@
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
+ ../src_remaster/common/types.h /usr/include/c++/4.8/iostream \
  ../ext/leveldb/include/leveldb/slice.h /usr/include/assert.h \
  ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/stubs/common.h \
@@ -197,11 +197,10 @@
  ../ext/protobuf/src/google/protobuf/extension_set.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/machine/cluster_config.h \
+ ../src_remaster/machine/cluster_config.h \
  ../obj/proto/cluster_config.pb.h \
- ../src_lowlatency/machine/connection/connection.h \
- ../obj/proto/header.pb.h ../obj/proto/scalar.pb.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
+ ../src_remaster/machine/connection/connection.h ../obj/proto/header.pb.h \
+ ../obj/proto/scalar.pb.h ../src_remaster/machine/connection/zmq_cpp.h \
  ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/algorithm \
  /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h \
@@ -219,12 +218,11 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
  /usr/include/c++/4.8/bits/stl_numeric.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/queue \
+ /usr/include/c++/4.8/cstring ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/common/atomic.h /usr/include/c++/4.8/queue \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h ../src_lowlatency/btree/btree.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h \
- ../src_lowlatency/machine/connection/connection_zmq.h
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ ../src_remaster/btree/btree.h ../src_remaster/btree/btree_container.h \
+ ../src_remaster/common/mutex.h \
+ ../src_remaster/machine/connection/connection_zmq.h

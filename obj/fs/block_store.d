@@ -1,5 +1,5 @@
 ../obj/fs/block_store.o: fs/block_store.cc /usr/include/stdc-predef.h \
- ../src_lowlatency/fs/block_store.h ../ext/leveldb/include/leveldb/db.h \
+ ../src_remaster/fs/block_store.h ../ext/leveldb/include/leveldb/db.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -93,10 +93,9 @@
  /usr/include/c++/4.8/bits/hash_bytes.h \
  /usr/include/c++/4.8/bits/basic_string.tcc \
  ../ext/leveldb/include/leveldb/status.h \
- ../ext/leveldb/include/leveldb/options.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/bits/ios_base.h \
+ ../ext/leveldb/include/leveldb/options.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
  /usr/include/c++/4.8/bits/locale_classes.tcc \
  /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
@@ -109,10 +108,10 @@
  /usr/include/c++/4.8/bits/locale_facets.tcc \
  /usr/include/c++/4.8/bits/basic_ios.tcc \
  /usr/include/c++/4.8/bits/ostream.tcc /usr/include/c++/4.8/istream \
- /usr/include/c++/4.8/bits/istream.tcc \
- ../src_lowlatency/machine/app/app.h ../ext/glog/include/glog/logging.h \
- /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/c++/4.8/bits/istream.tcc ../src_remaster/machine/app/app.h \
+ ../ext/glog/include/glog/logging.h /usr/include/c++/4.8/sstream \
+ /usr/include/c++/4.8/bits/sstream.tcc /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/c++/4.8/vector \
@@ -179,13 +178,12 @@
  /usr/include/c++/4.8/bits/atomic_base.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
  /usr/include/c++/4.8/map /usr/include/c++/4.8/bits/stl_map.h \
- /usr/include/c++/4.8/bits/stl_multimap.h \
- ../src_lowlatency/common/atomic.h /usr/include/c++/4.8/queue \
- /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
+ /usr/include/c++/4.8/bits/stl_multimap.h ../src_remaster/common/atomic.h \
+ /usr/include/c++/4.8/queue /usr/include/c++/4.8/deque \
+ /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_queue.h \
- ../src_lowlatency/btree/btree_map.h /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/stl_queue.h ../src_remaster/btree/btree_map.h \
+ /usr/include/c++/4.8/algorithm /usr/include/c++/4.8/bits/stl_algo.h \
  /usr/include/c++/4.8/bits/algorithmfwd.h /usr/include/c++/4.8/random \
  /usr/include/c++/4.8/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/huge_val.h \
@@ -208,12 +206,12 @@
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/fxsrintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/adxintrin.h \
  /usr/include/c++/4.8/bits/random.tcc /usr/include/c++/4.8/numeric \
- /usr/include/c++/4.8/bits/stl_numeric.h ../src_lowlatency/btree/btree.h \
+ /usr/include/c++/4.8/bits/stl_numeric.h ../src_remaster/btree/btree.h \
  /usr/include/c++/4.8/iterator \
  /usr/include/c++/4.8/bits/stream_iterator.h \
- ../src_lowlatency/btree/btree_container.h \
- ../src_lowlatency/common/mutex.h ../src_lowlatency/common/utils.h \
- /usr/include/x86_64-linux-gnu/sys/time.h ../obj/proto/scalar.pb.h \
+ ../src_remaster/btree/btree_container.h ../src_remaster/common/mutex.h \
+ ../src_remaster/common/utils.h /usr/include/x86_64-linux-gnu/sys/time.h \
+ ../obj/proto/scalar.pb.h \
  ../ext/protobuf/src/google/protobuf/arenastring.h \
  ../ext/protobuf/src/google/protobuf/stubs/fastmem.h \
  ../ext/protobuf/src/google/protobuf/generated_message_util.h \
@@ -225,15 +223,15 @@
  ../ext/protobuf/src/google/protobuf/extension_set.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_reflection.h \
  ../ext/protobuf/src/google/protobuf/generated_enum_util.h \
- ../src_lowlatency/machine/machine.h \
- ../src_lowlatency/machine/cluster_config.h \
+ ../src_remaster/machine/machine.h \
+ ../src_remaster/machine/cluster_config.h \
  ../obj/proto/cluster_config.pb.h ../obj/proto/header.pb.h \
  ../obj/proto/scalar.pb.h ../obj/proto/start_app.pb.h \
- ../src_lowlatency/machine/message_buffer.h \
- ../src_lowlatency/machine/connection/zmq_cpp.h \
- ../ext/zeromq/include/zmq.h /usr/include/c++/4.8/cassert \
- /usr/include/c++/4.8/cstring ../src_lowlatency/machine/message_handler.h \
- ../obj/proto/report.pb.h ../ext/leveldb/include/leveldb/env.h \
- /usr/include/c++/4.8/cstdarg ../src_lowlatency/fs/calvinfs.h \
- ../src_lowlatency/fs/fs.h ../src_lowlatency/fs/status.h \
- ../obj/fs/calvinfs_config.pb.h ../src_lowlatency/common/source.h
+ ../src_remaster/machine/message_buffer.h \
+ ../src_remaster/machine/connection/zmq_cpp.h ../ext/zeromq/include/zmq.h \
+ /usr/include/c++/4.8/cassert /usr/include/c++/4.8/cstring \
+ ../src_remaster/machine/message_handler.h ../obj/proto/report.pb.h \
+ ../ext/leveldb/include/leveldb/env.h /usr/include/c++/4.8/cstdarg \
+ ../src_remaster/fs/calvinfs.h ../src_remaster/fs/fs.h \
+ ../src_remaster/fs/status.h ../obj/fs/calvinfs_config.pb.h \
+ ../src_remaster/common/source.h

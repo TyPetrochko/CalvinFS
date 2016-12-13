@@ -1,5 +1,5 @@
 ../obj/machine/cluster_config.o: machine/cluster_config.cc \
- /usr/include/stdc-predef.h ../src_lowlatency/machine/cluster_config.h \
+ /usr/include/stdc-predef.h ../src_remaster/machine/cluster_config.h \
  /usr/include/c++/4.8/map /usr/include/c++/4.8/bits/stl_tree.h \
  /usr/include/c++/4.8/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
@@ -96,10 +96,9 @@
  /usr/include/c++/4.8/bits/hash_bytes.h \
  /usr/include/c++/4.8/bits/basic_string.tcc \
  /usr/include/c++/4.8/bits/uses_allocator.h \
- /usr/include/c++/4.8/bits/stl_multimap.h \
- ../src_lowlatency/common/types.h /usr/include/c++/4.8/iostream \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/bits/ios_base.h \
+ /usr/include/c++/4.8/bits/stl_multimap.h ../src_remaster/common/types.h \
+ /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/bits/ios_base.h \
  /usr/include/c++/4.8/bits/locale_classes.h \
  /usr/include/c++/4.8/bits/locale_classes.tcc \
  /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
@@ -178,7 +177,7 @@
  /usr/include/c++/4.8/bits/stream_iterator.h \
  ../ext/protobuf/src/google/protobuf/stubs/casts.h \
  ../ext/protobuf/src/google/protobuf/extension_set.h \
- ../src_lowlatency/common/utils.h ../ext/glog/include/glog/logging.h \
+ ../src_remaster/common/utils.h ../ext/glog/include/glog/logging.h \
  /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
  /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
