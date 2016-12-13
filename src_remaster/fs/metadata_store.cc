@@ -643,6 +643,29 @@ void MetadataStore::GetRWSets(Action* action) {
     action->add_readset(in.path());
     action->add_writeset(in.path());
 
+  } else if (type == MetadataAction::REMASTER) {
+    // Not sure if we actually need these
+    LOG(ERROR) << "Determining R/W Sets for REMASTER Operation";
+    
+    MetadataAction::RemasterInput in;
+    in.ParseFromString(action->input());
+    action->add_readset(in.path());
+    action->add_writeset(in.path());
+    action->add_readset(ParentDir(in.path()));
+    action->add_writeset(ParentDir(in.path()));
+    
+    // this is some black magic...
+    // fake a rename "/a1/file" --> "/a5/file" so we get the right R/W set
+    string top_dir = TopDir(in.path());
+    string rest = in.path().substr(top_dir.length());
+    string fake_path = in.path().substr(0, 2) << in.machine() << rest;
+
+    LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
+
+    action->add_writeset(fake_path);
+    action->add_readset(fake_path);
+    action->add_writeset(fake_path);
+
   } else {
     LOG(FATAL) << "invalid action type";
   }
@@ -729,6 +752,14 @@ void MetadataStore::Run(Action* action) {
     MetadataAction::ChangePermissionsOutput out;
     in.ParseFromString(action->input());
     ChangePermissions_Internal(context, in, &out);
+    out.SerializeToString(action->mutable_output());
+  
+  } else if (type == MetadataAction::REMASTER) {
+    LOG(ERROR) << "Calling Remaster_Internal from MetadataStore::Run";
+    MetadataAction::RemasterInput in;
+    MetadataAction::RemasterOutput out;
+    in.ParseFromString(action->input());
+    Remaster_Internal(context, in, &out);
     out.SerializeToString(action->mutable_output());
 
   } else {
@@ -1086,3 +1117,10 @@ void MetadataStore::ChangePermissions_Internal(
   LOG(FATAL) << "not implemented";
 }
 
+void MetadataStore::Remaster_Internal(
+    ExecutionContext* context,
+    const MetadataAction::RemasterInput& in,
+    MetadataAction::RemasterOutput* out) {
+  // TODO send some RPCs!
+  LOG(FATAL) << "remaster not implemented yet!";
+}

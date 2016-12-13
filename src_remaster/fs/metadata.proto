@@ -58,6 +58,7 @@ enum Type {
   WRITE              = 6;
   APPEND             = 7;
   CHANGE_PERMISSIONS = 8;
+  REMASTER           = 9;
 }
 
 // Possible error conditions.
@@ -220,6 +221,18 @@ message ChangePermissionsOutput {
   repeated Error errors = 2;
 }
 
+/////////////////////////////////////////////
+//
+// Rename (non-recursive: only succeeds for DATA files and EMPTY directories)
+//
+message RemasterInput {
+  required string path = 1;
+  required uint64 machine = 2;
+}
+message RemasterOutput {
+  optional bool success = 1 [default = true];
+  repeated Error errors = 2;
+}
 
 ///////////////////////////////////////////////////////
 //

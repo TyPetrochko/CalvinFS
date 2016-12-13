@@ -326,3 +326,53 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   }
 }
 
+MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 machine){
+  uint64 distinct_id = machine()->GetGUID();
+  string channel_name = "action-result-" + UInt64ToString(distinct_id);
+  auto channel = machine()->DataChannel(channel_name);
+  CHECK(!channel->Pop(NULL));
+  
+  Action* a = new Action();
+  a->set_client_machine(machine()->machine_id());
+  a->set_client_channel(channel_name);
+  a->set_action_type(MetadataAction::REMASTER);
+  a->set_distinct_id(distinct_id);
+  
+  MetadataAction::RemasterInput in;
+  in.set_path(path.data(), path.size());
+  in.set_machine(machine);
+  in.SerializeToString(a->mutable_input());
+  metadata_->GetRWSets(a);
+
+  // Not really sure what this does. We'll see I guess.
+  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  Header* header = new Header();
+  header->set_from(machine()->machine_id());
+  header->set_to(machine_sent);
+  header->set_type(Header::RPC);
+  header->set_app("blocklog");
+  header->set_rpc("APPEND");
+  string* block = new string();
+  a->SerializeToString(block);
+  machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
+
+  MessageBuffer* m = NULL;
+  while (!channel->Pop(&m)) {
+    // Wait for action to complete and be sent back.
+    usleep(100);
+  }
+
+  // Reconstruct a RemasterOutput from a serialized result Action
+  Action result;
+  result.ParseFromArray((*m)[0].data(), (*m)[0].size());
+  delete m;
+  MetadataAction::RemasterOutput out;
+  out.ParseFromString(result.output());
+
+  if (out.success()) {
+    return new MessageBuffer();
+  } else {
+    return new MessageBuffer(new string("error remastering file/dir\n"));
+  }
+}
+

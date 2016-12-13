@@ -107,6 +107,9 @@ class CalvinFSClientApp : public App {
         CrashExperiment();
         break;
 
+      case 11:
+        RemasterExperiment();
+        break;
     }
 
   }
@@ -144,13 +147,19 @@ class CalvinFSClientApp : public App {
          header->misc_string(0),
          header->misc_string(1)));
      
-   // EXTERNAL file copy
+   // EXTERNAL file rename
    } else if (header->rpc() == "RENAME_FILE") {
      machine()->SendReplyMessage(header, RenameFile(
          header->misc_string(0),
          header->misc_string(1)));
 
-    // Callback for recording latency stats
+   // EXTERNAL file remaster
+   } else if (header->rpc() == "REMASTER_FILE") {
+     machine()->SendReplyMessage(header, RemasterFile(
+         header->misc_string(0),
+         header->misc_int(0)));
+
+   // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
       int misc_size = header->misc_string_size();
@@ -652,7 +661,6 @@ void LatencyExperimentAppend() {
 
 
   void CopyExperiment(int local_percentage) {
-    LOG(ERROR) << "Local perc. inside experiment " << local_percentage;
     uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
     uint64 replicas_num = config_->GetReplicas();
     vector<uint64> machines_other_replicas;      
@@ -761,6 +769,43 @@ void LatencyExperimentAppend() {
                << "Renamed " <<  "500 files. Elapsed time: "
                << (GetTime() - start) << " seconds";
   }
+  
+  void RemasterExperiment() {
+    // TODO
+    uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
+    uint64 replicas_num = config_->GetReplicas();
+    vector<uint64> machines_other_replicas;      
+
+    for (uint64 i = 0; i < partitions_per_replica * replicas_num; i++) {
+      if (i/partitions_per_replica != replica_) {
+        machines_other_replicas.push_back(i);
+      }
+    }
+
+    uint64 size_other_machines = machines_other_replicas.size();
+
+    Spin(1);
+    metadata_->Init();
+    Spin(1);
+    machine()->GlobalBarrier();
+    Spin(1);
+
+    double start = GetTime();
+    
+    for (int j = 0; j < 500; j++) {
+      // Copy operations that cross data centers
+       BackgroundRemasterFile(
+           "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
+           machines_other_replicas[rand()%size_other_machines]);
+
+      if (j % 100 == 0) {
+        LOG(ERROR) << "[" << machine()->machine_id() << "] "
+                   << "Test progress : " << j / 100 << "/" << 5;
+      }    
+    }
+
+    LOG(FATAL) << "Remaster experiment not done yet!";
+  }
 
 void LatencyExperimentRenameFile(int local_percentage) {
     // Setup.
@@ -856,6 +901,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
   MessageBuffer* LS(const Slice& path);
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
+  MessageBuffer* RemasterFile(const Slice& path, uint64 machine);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();
@@ -1004,6 +1050,30 @@ void LatencyExperimentRenameFile(int local_percentage) {
     machine()->SendMessage(header, new MessageBuffer());
   }
 
+  void BackgroundRemasterFile (const Slice& path, uint64 machine) {
+    Header* header = new Header();
+    header->set_from(machine()->machine_id());
+    header->set_to(machine()->machine_id());
+    header->set_type(Header::RPC);
+    header->set_app(name());
+    header->set_rpc("REMASTER_FILE");
+    header->add_misc_string(path.data(), path.size());
+    header->add_misc_string(machine);
+    if (reporting_ && rand() % 2 == 0) {
+      header->set_callback_app(name());
+      header->set_callback_rpc("CB");
+      header->add_misc_string("remaster");
+      header->add_misc_double(GetTime());
+    } else {
+      header->set_ack_counter(reinterpret_cast<uint64>(&capacity_));
+      while (capacity_.load() <= 0) {
+        // Wait for some old operations to complete.
+        usleep(100);
+      }
+      --capacity_;
+    }
+    machine()->SendMessage(header, new MessageBuffer());
+  }
 
   inline Slice RandomData(uint64 size) {
     uint64 start = rand() % (random_data_.size() - size);
