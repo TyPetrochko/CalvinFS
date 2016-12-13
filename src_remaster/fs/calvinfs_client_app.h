@@ -652,6 +652,7 @@ void LatencyExperimentAppend() {
 
 
   void CopyExperiment(int local_percentage) {
+    LOG(ERROR) << "Local perc. inside experiment " << local_percentage;
     uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
     uint64 replicas_num = config_->GetReplicas();
     vector<uint64> machines_other_replicas;      
