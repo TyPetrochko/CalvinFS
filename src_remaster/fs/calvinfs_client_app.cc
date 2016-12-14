@@ -327,7 +327,6 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
 }
 
 MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
-  LOG(ERROR) << "Internally calling RemasterFile() in calvinfs_client_app.cc";
   uint64 distinct_id = machine()->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
   auto channel = machine()->DataChannel(channel_name);

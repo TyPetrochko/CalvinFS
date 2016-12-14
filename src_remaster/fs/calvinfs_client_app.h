@@ -1055,7 +1055,6 @@ void LatencyExperimentRenameFile(int local_percentage) {
   }
 
   void BackgroundRemasterFile (const Slice& path, uint64 node) {
-    LOG(ERROR) << "Remaster file " << path << " to node " << node;
     Header* header = new Header();
     header->set_from(machine()->machine_id());
     header->set_to(machine()->machine_id());
