@@ -794,8 +794,6 @@ void LatencyExperimentAppend() {
     LOG(ERROR) << "Starting up experiments!";
     for (int j = 0; j < 500; j++) {
       // Copy operations that cross data centers
-      LOG(ERROR) << "Calling remaster file now...";
-      LOG(ERROR) << "size_other_machines: " << size_other_machines;
        BackgroundRemasterFile(
            "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
            machines_other_replicas[rand()%size_other_machines]);
