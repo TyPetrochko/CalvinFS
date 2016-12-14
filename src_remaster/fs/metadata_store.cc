@@ -915,7 +915,7 @@ void MetadataStore::Rename_Internal(
     const MetadataAction::RenameInput& in,
     MetadataAction::RenameOutput* out) {
   // Currently only support Copy: (non-recursive: only succeeds for DATA files and EMPTY directory)
-  
+  LOG(ERROR) << "Rename_Internal called!";
   MetadataEntry from_entry;
   if (!context->GetEntry(in.from_path(), &from_entry)) {
     // File doesn't exist!
