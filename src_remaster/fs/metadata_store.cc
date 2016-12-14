@@ -261,11 +261,11 @@ class DistributedExecutionContext : public ExecutionContext {
           reads_[remote_read.entries(j).key()] = remote_read.entries(j).value();
         }
       }
-      LOG(ERROR) << "I";
       // Close channel.
       machine_->CloseDataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
 //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     }
+    LOG(ERROR) << "I";
   }
 
   // Destructor installs all LOCAL writes.
@@ -656,9 +656,7 @@ void MetadataStore::GetRWSets(Action* action) {
     MetadataAction::RemasterInput in;
     in.ParseFromString(action->input());
     action->add_readset(in.path());
-    action->add_writeset(in.path());
     action->add_readset(ParentDir(in.path()));
-    action->add_writeset(ParentDir(in.path()));
     
     // this is some black magic...
     // fake a rename "/a1/file" --> "/a5/file" so we get the right R/W set
@@ -669,9 +667,9 @@ void MetadataStore::GetRWSets(Action* action) {
     // LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
 
     action->add_writeset(fake_path);
-    action->add_readset(fake_path);
-    action->add_writeset(fake_path);
-
+    action->add_readset(ParentDir(fake_path));
+    action->add_writeset(ParentDir(fake_path));
+    
   } else {
     LOG(FATAL) << "invalid action type";
   }
