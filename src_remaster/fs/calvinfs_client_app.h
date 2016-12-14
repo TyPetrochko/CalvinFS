@@ -803,8 +803,12 @@ void LatencyExperimentAppend() {
                    << "Test progress : " << j / 100 << "/" << 5;
       }    
     }
+    // Report.
+    LOG(ERROR) << "[" << machine()->machine_id() << "] "
+               << "Renamed " <<  "500 files. Elapsed time: "
+               << (GetTime() - start) << " seconds";
 
-    LOG(FATAL) << "Remaster experiment not done yet!";
+    // LOG(FATAL) << "Remaster experiment not done yet!";
   }
 
 void LatencyExperimentRenameFile(int local_percentage) {
@@ -1050,7 +1054,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
     machine()->SendMessage(header, new MessageBuffer());
   }
 
-  void BackgroundRemasterFile (const Slice& path, uint64 machine) {
+  void BackgroundRemasterFile (const Slice& path, uint64 node) {
     Header* header = new Header();
     header->set_from(machine()->machine_id());
     header->set_to(machine()->machine_id());
@@ -1058,7 +1062,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
     header->set_app(name());
     header->set_rpc("REMASTER_FILE");
     header->add_misc_string(path.data(), path.size());
-    header->add_misc_string(machine);
+    header->add_misc_int(node);
     if (reporting_ && rand() % 2 == 0) {
       header->set_callback_app(name());
       header->set_callback_rpc("CB");

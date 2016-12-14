@@ -658,7 +658,7 @@ void MetadataStore::GetRWSets(Action* action) {
     // fake a rename "/a1/file" --> "/a5/file" so we get the right R/W set
     string top_dir = TopDir(in.path());
     string rest = in.path().substr(top_dir.length());
-    string fake_path = in.path().substr(0, 2) << in.machine() << rest;
+    string fake_path = in.path().substr(0, 2) + UInt64ToString(in.node()) + rest;
 
     LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
 

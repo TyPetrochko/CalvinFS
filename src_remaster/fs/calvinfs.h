@@ -10,6 +10,8 @@
 #include "fs/calvinfs_config.pb.h"
 #include "common/source.h"
 
+string TopDir(const string& path);
+
 class Action;
 class Machine;
 class MessageBuffer;

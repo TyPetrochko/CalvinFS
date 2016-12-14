@@ -227,7 +227,7 @@ message ChangePermissionsOutput {
 //
 message RemasterInput {
   required string path = 1;
-  required uint64 machine = 2;
+  required uint64 node = 2;
 }
 message RemasterOutput {
   optional bool success = 1 [default = true];

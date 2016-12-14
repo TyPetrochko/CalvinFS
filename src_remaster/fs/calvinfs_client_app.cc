@@ -326,7 +326,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   }
 }
 
-MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 machine){
+MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
   uint64 distinct_id = machine()->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
   auto channel = machine()->DataChannel(channel_name);
@@ -340,7 +340,7 @@ MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 machine
   
   MetadataAction::RemasterInput in;
   in.set_path(path.data(), path.size());
-  in.set_machine(machine);
+  in.set_node(node);
   in.SerializeToString(a->mutable_input());
   metadata_->GetRWSets(a);
 
