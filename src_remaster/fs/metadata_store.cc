@@ -68,7 +68,6 @@ class ExecutionContext {
   // Constructor performs all reads.
   ExecutionContext(VersionedKVStore* store, Action* action)
       : store_(store), version_(action->version()), aborted_(false) {
-        LOG(ERROR) << "Made a local execution context!";
     for (int i = 0; i < action->readset_size(); i++) {
       if (!store_->Get(action->readset(i),
                        version_,
@@ -176,7 +175,7 @@ class DistributedExecutionContext : public ExecutionContext {
     origin_ = action->origin();
 
     data_channel_version = action->distinct_id();
-    LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
+    // LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     // Look up what replica we're at.
     replica_ = config_->LookupReplica(machine_->machine_id());
 
@@ -644,9 +643,6 @@ void MetadataStore::GetRWSets(Action* action) {
     action->add_writeset(in.path());
 
   } else if (type == MetadataAction::REMASTER) {
-    // Not sure if we actually need these
-    LOG(ERROR) << "Determining R/W Sets for REMASTER Operation";
-    
     MetadataAction::RemasterInput in;
     in.ParseFromString(action->input());
     action->add_readset(in.path());
@@ -660,7 +656,7 @@ void MetadataStore::GetRWSets(Action* action) {
     string rest = in.path().substr(top_dir.length());
     string fake_path = in.path().substr(0, 2) + UInt64ToString(in.node()) + rest;
 
-    LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
+    // LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
 
     action->add_writeset(fake_path);
     action->add_readset(fake_path);
@@ -755,7 +751,6 @@ void MetadataStore::Run(Action* action) {
     out.SerializeToString(action->mutable_output());
   
   } else if (type == MetadataAction::REMASTER) {
-    LOG(ERROR) << "Calling Remaster_Internal from MetadataStore::Run";
     MetadataAction::RemasterInput in;
     MetadataAction::RemasterOutput out;
     in.ParseFromString(action->input());
@@ -929,9 +924,6 @@ void MetadataStore::Rename_Internal(
 
   from_machine = LookupReplicaByDir(from);
   to_machine = LookupReplicaByDir(to);
-
-  LOG(ERROR) << "Rename " << from << " --> " << to << " is on replicas "
-    << from_machine << " --> " << to_machine;
 
   MetadataEntry from_entry;
   if (!context->GetEntry(in.from_path(), &from_entry)) {
