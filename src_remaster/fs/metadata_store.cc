@@ -678,12 +678,13 @@ void MetadataStore::Run(Action* action) {
         new DistributedExecutionContext(machine_, config_, store_, action);
   }
 
-
+  LOG(ERROR) << "Checking if we're a writer... (should we return?)";
   if (!context->IsWriter()) {
     delete context;
-    LOG(ERROR) << "Not returning because we're not a writer!";
+    LOG(ERROR) << "Returning because we're not a writer!";
     return;
   }
+  LOG(ERROR) << "Nope! Continue on.";
 //LOG(ERROR) << "Machine: "<<machine_id_<<"****************** MetadataStore::Run:*******(will execute it)" << action->version()<<" distinct id is:"<<action->distinct_id();
   // Execute action.
   MetadataAction::Type type =
