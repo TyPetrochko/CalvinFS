@@ -668,6 +668,7 @@ void MetadataStore::GetRWSets(Action* action) {
 }
 
 void MetadataStore::Run(Action* action) {
+  LOG(ERROR) << "Running!";
   // Prepare by performing all reads.
   ExecutionContext* context;
   if (machine_ == NULL) {
