@@ -771,7 +771,7 @@ void LatencyExperimentAppend() {
   }
   
   void RemasterExperiment() {
-    // TODO
+    LOG(ERROR) << "Starting remaster experiment on node " << machine()->machine_id();
     uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
     uint64 replicas_num = config_->GetReplicas();
     vector<uint64> machines_other_replicas;      
@@ -1055,6 +1055,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
   }
 
   void BackgroundRemasterFile (const Slice& path, uint64 node) {
+    LOG(ERROR) << "Remaster file " << path << " to node " << node;
     Header* header = new Header();
     header->set_from(machine()->machine_id());
     header->set_to(machine()->machine_id());
