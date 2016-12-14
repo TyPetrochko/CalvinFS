@@ -182,12 +182,10 @@ class DistributedExecutionContext : public ExecutionContext {
     // Figure out what machines are readers (and perform local reads).
     reader_ = false;
      set<pair<uint64, uint32>> remote_readers;
-     LOG(ERROR) << "A, readset size is " << action->readset_size();
      for (int i = 0; i < action->readset_size(); i++) {
       uint64 mds = config_->HashFileName(action->readset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
       if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i)) == origin_)) {
-       LOG(ERROR) << "B";
         // Local read.
         if (!store_->Get(action->readset(i),
                          version_,
@@ -196,7 +194,6 @@ class DistributedExecutionContext : public ExecutionContext {
         }
         reader_ = true;
       } else {
-         LOG(ERROR) << "C";
 //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
         remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i))));
       }
@@ -206,17 +203,13 @@ class DistributedExecutionContext : public ExecutionContext {
     writer_ = false;
     set<pair<uint64, uint32>> remote_writers;
    
-    LOG(ERROR) << "D: writeset size is " << action->writeset_size();
-    
     for (int i = 0; i < action->writeset_size(); i++) {
       uint64 mds = config_->HashFileName(action->writeset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
       if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i)) == origin_)) {
-        LOG(ERROR) << "E";
         writer_ = true;
 //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
       } else {
-        LOG(ERROR) << "F";
 //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
         remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i))));
       }
@@ -224,7 +217,6 @@ class DistributedExecutionContext : public ExecutionContext {
 
     // If any reads were performed locally, broadcast them to writers.
     if (reader_) {
-      LOG(ERROR) << "G";
       MapProto local_reads;
       for (auto it = reads_.begin(); it != reads_.end(); ++it) {
         MapProto::Entry* e = local_reads.add_entries();
@@ -244,7 +236,6 @@ class DistributedExecutionContext : public ExecutionContext {
 
     // If any writes will be performed locally, wait for all remote reads.
     if (writer_) {
-      LOG(ERROR) << "H";
       // Get channel.
       AtomicQueue<MessageBuffer*>* channel =
           machine_->DataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
@@ -265,7 +256,6 @@ class DistributedExecutionContext : public ExecutionContext {
       machine_->CloseDataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
 //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     }
-    LOG(ERROR) << "I";
   }
 
   // Destructor installs all LOCAL writes.
@@ -676,25 +666,19 @@ void MetadataStore::GetRWSets(Action* action) {
 }
 
 void MetadataStore::Run(Action* action) {
-  LOG(ERROR) << "Running! Continue on.";
   // Prepare by performing all reads.
   ExecutionContext* context;
   if (machine_ == NULL) {
-    LOG(ERROR) << "Regular execution context";
     context = new ExecutionContext(store_, action);
   } else {
-    LOG(ERROR) << "Distributed execution context";
     context =
         new DistributedExecutionContext(machine_, config_, store_, action);
   }
 
-  LOG(ERROR) << "Checking if we're a writer... (should we return?)";
   if (!context->IsWriter()) {
     delete context;
-    LOG(ERROR) << "Returning because we're not a writer!";
     return;
   }
-  LOG(ERROR) << "Nope! Continue on.";
 //LOG(ERROR) << "Machine: "<<machine_id_<<"****************** MetadataStore::Run:*******(will execute it)" << action->version()<<" distinct id is:"<<action->distinct_id();
   // Execute action.
   MetadataAction::Type type =
@@ -1119,4 +1103,5 @@ void MetadataStore::Remaster_Internal(
     MetadataAction::RemasterOutput* out) {
   // TODO send some RPCs!
   LOG(ERROR) << "TODO: remaster not implemented yet! See metadat_store.cc::Remaster_Internal";
+  LOG(ERROR) << "Machine: " << machine_->machine_id() << "; File: " << in.path() << "; Node: " << in.node();
 }
