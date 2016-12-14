@@ -60,8 +60,6 @@ class CalvinFSClientApp : public App {
     Spin(1);
 
     capacity_ = kMaxCapacity;
-    LOG(ERROR) << "About to report local percentage";
-    LOG(ERROR) << "IN-EXP PERCENTAGE: " << local_percentage;
     switch(experiment) {
       case 0:
         FillExperiment();
