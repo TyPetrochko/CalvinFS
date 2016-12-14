@@ -668,12 +668,14 @@ void MetadataStore::GetRWSets(Action* action) {
 }
 
 void MetadataStore::Run(Action* action) {
-  LOG(ERROR) << "Running!";
+  LOG(ERROR) << "Running! Continue on.";
   // Prepare by performing all reads.
   ExecutionContext* context;
   if (machine_ == NULL) {
+    LOG(ERROR) << "Regular execution context";
     context = new ExecutionContext(store_, action);
   } else {
+    LOG(ERROR) << "Distributed execution context";
     context =
         new DistributedExecutionContext(machine_, config_, store_, action);
   }
