@@ -681,6 +681,7 @@ void MetadataStore::Run(Action* action) {
 
   if (!context->IsWriter()) {
     delete context;
+    LOG(ERROR) << "Not returning because we're not a writer!";
     return;
   }
 //LOG(ERROR) << "Machine: "<<machine_id_<<"****************** MetadataStore::Run:*******(will execute it)" << action->version()<<" distinct id is:"<<action->distinct_id();
