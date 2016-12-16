@@ -139,25 +139,25 @@ class CalvinFSClientApp : public App {
           (*message)[0],
           header->misc_string(0)));
 
-   // EXTERNAL file copy
-   } else if (header->rpc() == "COPY_FILE") {
-     machine()->SendReplyMessage(header, CopyFile(
-         header->misc_string(0),
-         header->misc_string(1)));
+    // EXTERNAL file copy
+    } else if (header->rpc() == "COPY_FILE") {
+      machine()->SendReplyMessage(header, CopyFile(
+          header->misc_string(0),
+          header->misc_string(1)));
      
-   // EXTERNAL file rename
-   } else if (header->rpc() == "RENAME_FILE") {
-     machine()->SendReplyMessage(header, RenameFile(
-         header->misc_string(0),
-         header->misc_string(1)));
+    // EXTERNAL file rename
+    } else if (header->rpc() == "RENAME_FILE") {
+      machine()->SendReplyMessage(header, RenameFile(
+          header->misc_string(0),
+          header->misc_string(1)));
 
-   // EXTERNAL file remaster
-   } else if (header->rpc() == "REMASTER_FILE") {
-     machine()->SendReplyMessage(header, RemasterFile(
-         header->misc_string(0),
-         header->misc_int(0)));
+    // EXTERNAL file remaster
+    } else if (header->rpc() == "REMASTER_FILE") {
+      machine()->SendReplyMessage(header, RemasterFile(
+          header->misc_string(0),
+          header->misc_int(0)));
 
-   // Callback for recording latency stats
+    // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
       int misc_size = header->misc_string_size();

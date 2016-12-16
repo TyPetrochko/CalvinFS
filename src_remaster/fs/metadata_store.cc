@@ -181,8 +181,8 @@ class DistributedExecutionContext : public ExecutionContext {
 
     // Figure out what machines are readers (and perform local reads).
     reader_ = false;
-     set<pair<uint64, uint32>> remote_readers;
-     for (int i = 0; i < action->readset_size(); i++) {
+    set<pair<uint64, uint32>> remote_readers;
+    for (int i = 0; i < action->readset_size(); i++) {
       uint64 mds = config_->HashFileName(action->readset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
       if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i)) == origin_)) {
@@ -194,7 +194,7 @@ class DistributedExecutionContext : public ExecutionContext {
         }
         reader_ = true;
       } else {
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
+        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
         remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i))));
       }
     }
@@ -202,15 +202,15 @@ class DistributedExecutionContext : public ExecutionContext {
     // Figure out what machines are writers.
     writer_ = false;
     set<pair<uint64, uint32>> remote_writers;
-   
+
     for (int i = 0; i < action->writeset_size(); i++) {
       uint64 mds = config_->HashFileName(action->writeset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
       if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i)) == origin_)) {
         writer_ = true;
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
+        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
       } else {
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
+        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
         remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i))));
       }
     }
@@ -230,7 +230,7 @@ class DistributedExecutionContext : public ExecutionContext {
         header->set_type(Header::DATA);
         header->set_data_channel("action-" + UInt32ToString(it->second) + "-" + UInt64ToString(data_channel_version));
         machine_->SendMessage(header, new MessageBuffer(local_reads));
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext send local read:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  to:"<<it->first;
+        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext send local read:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  to:"<<it->first;
       }
     }
 
@@ -254,7 +254,7 @@ class DistributedExecutionContext : public ExecutionContext {
       }
       // Close channel.
       machine_->CloseDataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
-//LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
+      //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     }
   }
 
