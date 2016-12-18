@@ -1097,6 +1097,7 @@ void MetadataStore::ChangePermissions_Internal(
   LOG(FATAL) << "not implemented";
 }
 
+// How to get this called when read and write sets are just the one thing?
 void MetadataStore::Remaster_Internal(
     ExecutionContext* context,
     const MetadataAction::RemasterInput& in,

@@ -284,7 +284,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   a->set_action_type(MetadataAction::RENAME);
   a->set_distinct_id(distinct_id);
 
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp:: begin RenameFile ^^^^^^  distinct id is:"<<distinct_id;
+  LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp:: begin RenameFile ^^^^^^  distinct id is:"<<distinct_id;
 
   MetadataAction::RenameInput in;
   in.set_from_path(from_path.data(), from_path.size());
@@ -310,7 +310,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
     usleep(100);
   }
 
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::RenameFile completed ^^^^^^  distinct id is:"<<distinct_id;
+  LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::RenameFile completed ^^^^^^  distinct id is:"<<distinct_id;
   //machine()->CloseDataChannel(channel_name);
 
   Action result;
@@ -331,6 +331,9 @@ MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
   auto channel = machine()->DataChannel(channel_name);
   CHECK(!channel->Pop(NULL));
+
+  // TODO SEND SOME RPCS.
+
   
   Action* a = new Action();
   a->set_client_machine(machine()->machine_id());
