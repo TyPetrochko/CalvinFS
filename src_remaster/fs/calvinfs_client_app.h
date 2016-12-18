@@ -793,7 +793,7 @@ void LatencyExperimentAppend() {
       // Renaming involves metadata of both parent directories and one file.
       BackgroundRenameFile(
           "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
-          "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + machine()->GetGUID());
+          "/a" + IntToString(other_machine) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(machine()->GetGUID()));
 
       if (j % 100 == 0) {
         LOG(ERROR) << "[" << machine()->machine_id() << "] "
