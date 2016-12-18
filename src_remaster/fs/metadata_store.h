@@ -95,6 +95,11 @@ class MetadataStore : public Store {
 
   virtual bool IsLocal(const string& path);
 
+  void SendRemasterRequest(string app_name,
+      string path,
+      uint32 old_master,
+      uint32 new_master);
+
   // Map of file paths to serialized MetadataEntries.
   VersionedKVStore* store_;
 
