@@ -65,7 +65,7 @@ MessageBuffer* CalvinFSClientApp::CreateFile(const Slice& path, FileType type) {
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -123,7 +123,7 @@ MessageBuffer* CalvinFSClientApp::AppendStringToFile(
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -240,7 +240,7 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -293,7 +293,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -348,7 +348,7 @@ MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
   metadata_->GetRWSets(a);
 
   // Not really sure what this does. We'll see I guess.
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);

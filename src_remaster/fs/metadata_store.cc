@@ -5,6 +5,7 @@
 #include "fs/metadata_store.h"
 
 #include <glog/logging.h>
+#include <iterator>
 #include <map>
 #include <set>
 #include <string>
@@ -368,17 +369,57 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   }
 }**/
 
-uint32 MetadataStore::GetMachineForReplica(Action* action) {
+uint32 MetadataStore::SendRemasterRequest(string app_name, string path, uint32 old_master, uint32 new_master) {
+  // sends remaster request as a transaction, even though it's a really weird
+  // kind of transaction.
+
+  uint64 distinct_id = machine_->GetGUID();
+
+  Action* a = new Action();
+  a->set_client_machine(machine_id_);
+  a->set_client_channel(channel_name);
+  a->set_action_type(MetadataAction::REMASTER);
+  a->set_distinct_id(distinct_id);
+
+  MetadataAction::RemasterInput in;
+  in.set_path(path.data(), path.size());
+  in.set_old_master(old_master);
+  in.set_new_master(new_master);
+  in.SerializeToString(a->mutable_input());
+  // don't bother with read and write sets, with any luck this will never be
+  // executed in the regular way.
+
+  // send this to a random machine on the old master replica
+  uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
+  Header* header = new Header();
+  header->set_from(machine_id_);
+  header->set_to(machine_sent);
+  header->set_type(Header::RPC);
+  header->set_app(app_name);
+  header->set_rpc("REMASTER");
+  string* block = new string();
+  a->SerializeToString(block);
+  machine_->SendMessage(header, new MessageBuffer(Slice(*block)));
+  // completely asynchronous: do not wait for response
+}
+
+uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
+  action->clear_involved_replicas();
   set<uint32> replica_involved;
+
+  // LookupReplicaByDir may be slow, so keep a map for every path in read and write sets
+  map<string, uint32> local_master_map;
 
   for (int i = 0; i < action->writeset_size(); i++) {
     uint32 replica = LookupReplicaByDir(action->writeset(i));
     replica_involved.insert(replica);
+    local_master_map[action->writeset(i)] = replica;
   }
 
   for (int i = 0; i < action->readset_size(); i++) {
     uint32 replica = LookupReplicaByDir(action->readset(i));
     replica_involved.insert(replica);
+    local_master_map[action->readset(i)] = replica;
   }
 
   CHECK(replica_involved.size() >= 1);
@@ -392,29 +433,34 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   for (set<uint32>::iterator it=replica_involved.begin(); it!=replica_involved.end(); ++it) {
     action->add_involved_replicas(*it);
   }
-  
-  uint32 lowest_replica = *(replica_involved.begin());
 
-  // Always send cross-replica actions to the first replica
+  uint32 master;
+
   if (replica_involved.size() == 1) {
-    if (lowest_replica == replica_) {
-      return machine_id_;
-    } else {
-      return lowest_replica * machines_per_replica_ + rand() % machines_per_replica_;
-    }
+    // this is a single-master transaction.
+    master = *(replica_involved.begin());
   } else {
-    if (lowest_replica != 0) {
-      action->set_fake_action(true);
-      return rand() % machines_per_replica_;
-    }  else {
-      if (replica_ == 0) {
-        return machine_id_;
-      } else {
-        return rand() % machines_per_replica_;
+    // choose one replica at random to be the new master.
+    auto it = local_master_map.begin();
+    advance(it, rand() % local_master_map.size());
+    master = it->second;
+
+    // send remaster requests to the old masters
+    for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
+      uint32 old_master = it->second;
+      if (old_master != master) {
+        SendRemasterRequest(app_name, it->first, old_master, master);
       }
     }
   }
 
+  if (master == replica_) {
+    // mastered on this replica. handle it here
+    return machine_id_;
+  } else {
+    // mastered on another replica. send it over there to a random machine
+    return master * machines_per_replica_ + rand() % machines_per_replica_;
+  }
 }
 
 uint64 MetadataStore::GetHeadMachine(uint64 machine_id) {
