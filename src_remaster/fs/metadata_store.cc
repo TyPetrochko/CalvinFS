@@ -1103,6 +1103,6 @@ void MetadataStore::Remaster_Internal(
     const MetadataAction::RemasterInput& in,
     MetadataAction::RemasterOutput* out) {
   // TODO send some RPCs!
-  LOG(ERROR) << "TODO: remaster not implemented yet! See metadat_store.cc::Remaster_Internal\n\t"
+  LOG(ERROR) << "TODO: remaster not implemented yet! See metadata_store.cc::Remaster_Internal\n\t"
     << "Machine: " << machine_->machine_id() << "; File: " << in.path() << "; Node: " << in.node();
 }
