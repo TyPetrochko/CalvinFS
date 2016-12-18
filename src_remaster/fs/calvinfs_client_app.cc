@@ -332,7 +332,7 @@ void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_
   } else {
     LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at other replica " << IntToString(new_master);
     // forward remaster request to new master
-    uint32 machines_per_replica = machine()->config()->GetPartitionsPerReplica();
+    uint32 machines_per_replica = config_->GetPartitionsPerReplica();
     uint32 dest = new_master * machines_per_replica + rand() % machines_per_replica;
     metadata_->SendRemasterRequest(dest, name(), path, old_master, new_master);
   }
