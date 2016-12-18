@@ -369,11 +369,12 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   }
 }**/
 
-uint32 MetadataStore::SendRemasterRequest(string app_name, string path, uint32 old_master, uint32 new_master) {
+void MetadataStore::SendRemasterRequest(string app_name, string path, uint32 old_master, uint32 new_master) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
 
   uint64 distinct_id = machine_->GetGUID();
+  string channel_name = "action-result-" + UInt64ToString(distinct_id);
 
   Action* a = new Action();
   a->set_client_machine(machine_id_);
@@ -689,6 +690,8 @@ void MetadataStore::GetRWSets(Action* action) {
     action->add_writeset(in.path());
 
   } else if (type == MetadataAction::REMASTER) {
+    LOG(FATAL) << "Remaster txns have no read or write sets";
+    /*
     MetadataAction::RemasterInput in;
     in.ParseFromString(action->input());
     action->add_readset(in.path());
@@ -705,6 +708,7 @@ void MetadataStore::GetRWSets(Action* action) {
     action->add_writeset(fake_path);
     action->add_readset(ParentDir(fake_path));
     action->add_writeset(ParentDir(fake_path));
+    */
     
   } else {
     LOG(FATAL) << "invalid action type";
@@ -1150,5 +1154,5 @@ void MetadataStore::Remaster_Internal(
     MetadataAction::RemasterOutput* out) {
   // TODO send some RPCs!
   LOG(ERROR) << "TODO: remaster not implemented yet! See metadata_store.cc::Remaster_Internal\n\t"
-    << "Machine: " << machine_->machine_id() << "; File: " << in.path() << "; Node: " << in.node();
+    << "Machine: " << machine_->machine_id() << "; File: " << in.path() << "; New master: " << UInt32ToString(in.new_master());
 }
