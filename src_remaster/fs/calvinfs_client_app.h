@@ -113,6 +113,8 @@ class CalvinFSClientApp : public App {
   }
 
   virtual void HandleMessage(Header* header, MessageBuffer* message) {
+    LOG(ERROR) << "Calvinfs client app on machine " << machine()->machine_id()
+               << " received RPC: " << header->rpc();
     // INTERNAL metadata lookup
     if (header->rpc() == "LOOKUP") {
       machine()->SendReplyMessage(
