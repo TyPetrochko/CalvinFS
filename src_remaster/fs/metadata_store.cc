@@ -381,6 +381,7 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, stri
   a->set_client_channel(channel_name);
   a->set_action_type(MetadataAction::REMASTER);
   a->set_distinct_id(distinct_id);
+  a->set_single_replica(true);
 
   MetadataAction::RemasterInput in;
   in.set_path(path.data(), path.size());
