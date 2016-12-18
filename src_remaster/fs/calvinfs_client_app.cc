@@ -332,85 +332,9 @@ void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_
   } else {
     LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at other replica " << IntToString(new_master);
     // forward remaster request to new master
-
-    uint64 distinct_id = machine_->GetGUID();
-
-    Action* a = new Action();
-    a->set_client_machine(machine()->machine_id());
-    a->set_client_channel(channel_name);
-    a->set_action_type(MetadataAction::REMASTER);
-    a->set_distinct_id(distinct_id);
-
-    MetadataAction::RemasterInput in;
-    in.set_path(path.data(), path.size());
-    in.set_old_master(old_master);
-    in.set_new_master(new_master);
-    in.SerializeToString(a->mutable_input());
-    // don't bother with read and write sets, with any luck this will never be
-    // executed in the regular way.
-
-    // send this to a random machine on the new master replica
-    uint32 machine_sent = new_master * machines_per_replica_ + rand() % machines_per_replica_;
-    Header* header = new Header();
-    header->set_from(machine()->machine_id());
-    header->set_to(machine_sent);
-    header->set_type(Header::RPC);
-    header->set_app(name());
-    header->set_rpc("REMASTER");
-    string* block = new string();
-    a->SerializeToString(block);
-    machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
-    // do not wait for response
-  }
-  uint64 distinct_id = machine()->GetGUID();
-  string channel_name = "action-result-" + UInt64ToString(distinct_id);
-  auto channel = machine()->DataChannel(channel_name);
-  CHECK(!channel->Pop(NULL));
-
-  // TODO SEND SOME RPCS.
-
-  
-  Action* a = new Action();
-  a->set_client_machine(machine()->machine_id());
-  a->set_client_channel(channel_name);
-  a->set_action_type(MetadataAction::REMASTER);
-  a->set_distinct_id(distinct_id);
-  
-  MetadataAction::RemasterInput in;
-  in.set_path(path.data(), path.size());
-  in.set_node(node);
-  in.SerializeToString(a->mutable_input());
-  metadata_->GetRWSets(a);
-
-  // Not really sure what this does. We'll see I guess.
-  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
-  Header* header = new Header();
-  header->set_from(machine()->machine_id());
-  header->set_to(machine_sent);
-  header->set_type(Header::RPC);
-  header->set_app("blocklog");
-  header->set_rpc("APPEND");
-  string* block = new string();
-  a->SerializeToString(block);
-  machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
-
-  MessageBuffer* m = NULL;
-  while (!channel->Pop(&m)) {
-    // Wait for action to complete and be sent back.
-    usleep(100);
-  }
-
-  // Reconstruct a RemasterOutput from a serialized result Action
-  Action result;
-  result.ParseFromArray((*m)[0].data(), (*m)[0].size());
-  delete m;
-  MetadataAction::RemasterOutput out;
-  out.ParseFromString(result.output());
-
-  if (out.success()) {
-    return new MessageBuffer();
-  } else {
-    return new MessageBuffer(new string("error remastering file/dir\n"));
+    uint32 machines_per_replica = machine()->config()->GetPartitionsPerReplica();
+    uint32 dest = new_master * machines_per_replica + rand() % machines_per_replica;
+    metadata_->SendRemasterRequest(dest, name(), path, old_master, new_master);
   }
 }
 

@@ -42,6 +42,12 @@ class MetadataStore : public Store {
   // requests to the provided app if remastering is necessary.
   uint32 GetMachineForReplica(Action* action, string app_name);
 
+  void SendRemasterRequest(uint32 to_machine,
+    string app_name,
+    string path,
+    uint32 old_master,
+    uint32 new_master);
+
  private:
   void CreateFile_Internal(
       ExecutionContext* context,
@@ -94,11 +100,6 @@ class MetadataStore : public Store {
       MetadataAction::ChangePermissionsOutput* out);
 
   virtual bool IsLocal(const string& path);
-
-  void SendRemasterRequest(string app_name,
-      string path,
-      uint32 old_master,
-      uint32 new_master);
 
   // Map of file paths to serialized MetadataEntries.
   VersionedKVStore* store_;

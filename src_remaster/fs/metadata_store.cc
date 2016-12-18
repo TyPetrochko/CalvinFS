@@ -369,7 +369,7 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   }
 }**/
 
-void MetadataStore::SendRemasterRequest(string app_name, string path, uint32 old_master, uint32 new_master) {
+void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, string path, uint32 old_master, uint32 new_master) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
 
@@ -391,10 +391,9 @@ void MetadataStore::SendRemasterRequest(string app_name, string path, uint32 old
   // executed in the regular way.
 
   // send this to a random machine on the old master replica
-  uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
   Header* header = new Header();
   header->set_from(machine_id_);
-  header->set_to(machine_sent);
+  header->set_to(to_machine);
   header->set_type(Header::RPC);
   header->set_app(app_name);
   header->set_rpc("REMASTER");
@@ -450,7 +449,8 @@ uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
     for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
       uint32 old_master = it->second;
       if (old_master != master) {
-        SendRemasterRequest(app_name, it->first, old_master, master);
+        uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
+        SendRemasterRequest(machine_sent, app_name, it->first, old_master, master);
       }
     }
   }
