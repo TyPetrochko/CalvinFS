@@ -65,7 +65,7 @@ MessageBuffer* CalvinFSClientApp::CreateFile(const Slice& path, FileType type) {
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -123,7 +123,7 @@ MessageBuffer* CalvinFSClientApp::AppendStringToFile(
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -240,7 +240,7 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -284,7 +284,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   a->set_action_type(MetadataAction::RENAME);
   a->set_distinct_id(distinct_id);
 
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp:: begin RenameFile ^^^^^^  distinct id is:"<<distinct_id;
+  LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp:: begin RenameFile ^^^^^^  distinct id is:"<<distinct_id;
 
   MetadataAction::RenameInput in;
   in.set_from_path(from_path.data(), from_path.size());
@@ -293,7 +293,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
+  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -310,7 +310,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
     usleep(100);
   }
 
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::RenameFile completed ^^^^^^  distinct id is:"<<distinct_id;
+  LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::RenameFile completed ^^^^^^  distinct id is:"<<distinct_id;
   //machine()->CloseDataChannel(channel_name);
 
   Action result;
@@ -326,53 +326,16 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   }
 }
 
-MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 machine){
-  uint64 distinct_id = machine()->GetGUID();
-  string channel_name = "action-result-" + UInt64ToString(distinct_id);
-  auto channel = machine()->DataChannel(channel_name);
-  CHECK(!channel->Pop(NULL));
-  
-  Action* a = new Action();
-  a->set_client_machine(machine()->machine_id());
-  a->set_client_channel(channel_name);
-  a->set_action_type(MetadataAction::REMASTER);
-  a->set_distinct_id(distinct_id);
-  
-  MetadataAction::RemasterInput in;
-  in.set_path(path.data(), path.size());
-  in.set_machine(machine);
-  in.SerializeToString(a->mutable_input());
-  metadata_->GetRWSets(a);
-
-  // Not really sure what this does. We'll see I guess.
-  uint32 machine_sent = metadata_->GetMachineForReplica(a);
-  Header* header = new Header();
-  header->set_from(machine()->machine_id());
-  header->set_to(machine_sent);
-  header->set_type(Header::RPC);
-  header->set_app("blocklog");
-  header->set_rpc("APPEND");
-  string* block = new string();
-  a->SerializeToString(block);
-  machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
-
-  MessageBuffer* m = NULL;
-  while (!channel->Pop(&m)) {
-    // Wait for action to complete and be sent back.
-    usleep(100);
-  }
-
-  // Reconstruct a RemasterOutput from a serialized result Action
-  Action result;
-  result.ParseFromArray((*m)[0].data(), (*m)[0].size());
-  delete m;
-  MetadataAction::RemasterOutput out;
-  out.ParseFromString(result.output());
-
-  if (out.success()) {
-    return new MessageBuffer();
+void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_master) {
+  if (new_master == replica_) {
+    LOG(ERROR) << "Must change " << path << " to be mastered at current replica " << IntToString(replica_);
   } else {
-    return new MessageBuffer(new string("error remastering file/dir\n"));
+    LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at other replica " << IntToString(new_master);
+    // forward remaster request to new master
+    uint32 machines_per_replica = config_->GetPartitionsPerReplica();
+    uint32 dest = new_master * machines_per_replica + rand() % machines_per_replica;
+    metadata_->SendRemasterRequest(dest, name(), path, old_master, new_master);
   }
 }
+
 

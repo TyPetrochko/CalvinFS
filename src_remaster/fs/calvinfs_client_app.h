@@ -60,8 +60,6 @@ class CalvinFSClientApp : public App {
     Spin(1);
 
     capacity_ = kMaxCapacity;
-    LOG(ERROR) << "About to report local percentage";
-    LOG(ERROR) << "IN-EXP PERCENTAGE: " << local_percentage;
     switch(experiment) {
       case 0:
         FillExperiment();
@@ -115,6 +113,7 @@ class CalvinFSClientApp : public App {
   }
 
   virtual void HandleMessage(Header* header, MessageBuffer* message) {
+
     // INTERNAL metadata lookup
     if (header->rpc() == "LOOKUP") {
       machine()->SendReplyMessage(
@@ -141,25 +140,28 @@ class CalvinFSClientApp : public App {
           (*message)[0],
           header->misc_string(0)));
 
-   // EXTERNAL file copy
-   } else if (header->rpc() == "COPY_FILE") {
-     machine()->SendReplyMessage(header, CopyFile(
-         header->misc_string(0),
-         header->misc_string(1)));
-     
-   // EXTERNAL file rename
-   } else if (header->rpc() == "RENAME_FILE") {
-     machine()->SendReplyMessage(header, RenameFile(
-         header->misc_string(0),
-         header->misc_string(1)));
+    // EXTERNAL file copy
+    } else if (header->rpc() == "COPY_FILE") {
+      machine()->SendReplyMessage(header, CopyFile(
+          header->misc_string(0),
+          header->misc_string(1)));
+    
+    // EXTERNAL file rename
+    } else if (header->rpc() == "RENAME_FILE") {
+      machine()->SendReplyMessage(header, RenameFile(
+          header->misc_string(0),
+          header->misc_string(1)));
 
-   // EXTERNAL file remaster
-   } else if (header->rpc() == "REMASTER_FILE") {
-     machine()->SendReplyMessage(header, RemasterFile(
-         header->misc_string(0),
-         header->misc_int(0)));
+    // INTERNAL file remaster
+    } else if (header->rpc() == "REMASTER") {
+      Action* a = new Action();
+      a->ParseFromArray((*message)[0].data(), (*message)[0].size());
+      MetadataAction::RemasterInput in;
+      in.ParseFromString(a->input());
+      // no reply expected
+      RemasterFile(in.path(), in.old_master(), in.new_master());
 
-   // Callback for recording latency stats
+    // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
       int misc_size = header->misc_string_size();
@@ -746,7 +748,7 @@ void LatencyExperimentAppend() {
                              "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(a2) + "/d" + IntToString(machine()->GetGUID()));
       } else {
         // Copy operations that cross data centers
-         BackgroundRenameFile("/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
+        BackgroundRenameFile("/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
                              "/a" + IntToString(machines_other_replicas[rand()%size_other_machines]) + "/b" + IntToString(rand() % 1000) + "/d" + IntToString(machine()->GetGUID()));
 // For high contention
 /**BackgroundRenameFile("/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(0) + "/c" + IntToString(j),
@@ -771,7 +773,7 @@ void LatencyExperimentAppend() {
   }
   
   void RemasterExperiment() {
-    // TODO
+    LOG(ERROR) << "Starting remaster experiment on node " << machine()->machine_id();
     uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
     uint64 replicas_num = config_->GetReplicas();
     vector<uint64> machines_other_replicas;      
@@ -783,7 +785,7 @@ void LatencyExperimentAppend() {
     }
 
     uint64 size_other_machines = machines_other_replicas.size();
-
+    
     Spin(1);
     metadata_->Init();
     Spin(1);
@@ -791,20 +793,28 @@ void LatencyExperimentAppend() {
     Spin(1);
 
     double start = GetTime();
-    
+    LOG(ERROR) << "Starting up experiments!";
     for (int j = 0; j < 500; j++) {
-      // Copy operations that cross data centers
-       BackgroundRemasterFile(
-           "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
-           machines_other_replicas[rand()%size_other_machines]);
+      uint32 other_machine = machines_other_replicas[rand() % size_other_machines];
+      // Remastering is not really an external transaction that can be sent
+      // It can only be triggered by a transaction involving multiple files
+      // which already exist and are mastered separately
+      // Renaming involves metadata of both parent directories and one file.
+      BackgroundRenameFile(
+          "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
+          "/a" + IntToString(other_machine) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(machine()->GetGUID()));
 
       if (j % 100 == 0) {
         LOG(ERROR) << "[" << machine()->machine_id() << "] "
                    << "Test progress : " << j / 100 << "/" << 5;
       }    
     }
+    // Report.
+    LOG(ERROR) << "[" << machine()->machine_id() << "] "
+               << "Renamed " <<  "500 files. Elapsed time: "
+               << (GetTime() - start) << " seconds";
 
-    LOG(FATAL) << "Remaster experiment not done yet!";
+    // LOG(FATAL) << "Remaster experiment not done yet!";
   }
 
 void LatencyExperimentRenameFile(int local_percentage) {
@@ -901,7 +911,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
   MessageBuffer* LS(const Slice& path);
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
-  MessageBuffer* RemasterFile(const Slice& path, uint64 machine);
+  void RemasterFile(string path, uint32 old_master, uint32 new_master);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();
@@ -1050,7 +1060,8 @@ void LatencyExperimentRenameFile(int local_percentage) {
     machine()->SendMessage(header, new MessageBuffer());
   }
 
-  void BackgroundRemasterFile (const Slice& path, uint64 machine) {
+  /*
+  void BackgroundRemasterFile (const Slice& path, uint64 node) {
     Header* header = new Header();
     header->set_from(machine()->machine_id());
     header->set_to(machine()->machine_id());
@@ -1058,7 +1069,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
     header->set_app(name());
     header->set_rpc("REMASTER_FILE");
     header->add_misc_string(path.data(), path.size());
-    header->add_misc_string(machine);
+    header->add_misc_int(node);
     if (reporting_ && rand() % 2 == 0) {
       header->set_callback_app(name());
       header->set_callback_rpc("CB");
@@ -1074,6 +1085,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
     }
     machine()->SendMessage(header, new MessageBuffer());
   }
+  */
 
   inline Slice RandomData(uint64 size) {
     uint64 start = rand() % (random_data_.size() - size);

@@ -37,7 +37,16 @@ class MetadataStore : public Store {
   virtual uint64 GetHeadMachine(uint64 machine_id);
   virtual uint32 LocalReplica();
 
-  uint32 GetMachineForReplica(Action* action);
+  // determines to which machine a transaction must be sent
+  // (must be on master replica). Sends asynchronous MetadataAction::REMASTER
+  // requests to the provided app if remastering is necessary.
+  uint32 GetMachineForReplica(Action* action, string app_name);
+
+  void SendRemasterRequest(uint32 to_machine,
+    string app_name,
+    string path,
+    uint32 old_master,
+    uint32 new_master);
 
  private:
   void CreateFile_Internal(
@@ -59,6 +68,11 @@ class MetadataStore : public Store {
       ExecutionContext* context,
       const MetadataAction::RenameInput& in,
       MetadataAction::RenameOutput* out);
+  
+  void Remaster_Internal(
+      ExecutionContext* context,
+      const MetadataAction::RemasterInput& in,
+      MetadataAction::RemasterOutput* out);
 
   void Lookup_Internal(
       ExecutionContext* context,
