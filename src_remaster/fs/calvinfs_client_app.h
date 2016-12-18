@@ -902,7 +902,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
   MessageBuffer* LS(const Slice& path);
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
-  MessageBuffer* RemasterFile(const Slice& path, uint64 machine);
+  // MessageBuffer* RemasterFile(const Slice& path, uint64 machine);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();

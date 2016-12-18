@@ -325,7 +325,7 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
     return new MessageBuffer(new string("error creating file/dir\n"));
   }
 }
-
+/*
 MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
   uint64 distinct_id = machine()->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
@@ -378,4 +378,5 @@ MessageBuffer* CalvinFSClientApp::RemasterFile(const Slice& path, uint64 node){
     return new MessageBuffer(new string("error remastering file/dir\n"));
   }
 }
+*/
 
