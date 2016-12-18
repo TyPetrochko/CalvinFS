@@ -327,14 +327,19 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
 }
 
 void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_master) {
-  if (new_master == replica_) {
-    LOG(ERROR) << "Must change " << path << " to be mastered at current replica " << IntToString(replica_);
+  if (old_master != replica_) {
+    LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at replica " << IntToString(new_master);
   } else {
-    LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at other replica " << IntToString(new_master);
-    // forward remaster request to new master
+    LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
     uint32 machines_per_replica = config_->GetPartitionsPerReplica();
-    uint32 dest = new_master * machines_per_replica + rand() % machines_per_replica;
-    metadata_->SendRemasterRequest(dest, name(), path, old_master, new_master);
+    // forward remaster request to new master, and all other masters
+    for (uint32 replica = 0; replica < config_->GetReplicas(); replica++) {
+      if (replica != replica_) {
+        // forward to everyone else
+        uint32 dest = replica * machines_per_replica + rand() % machines_per_replica;
+        metadata_->SendRemasterRequest(dest, name(), path, old_master, new_master);
+      }
+    }
   }
 }
 
