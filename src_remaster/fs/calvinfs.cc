@@ -157,7 +157,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
       uint64 distinct_id = machine->GetGUID();
       string channel_name = "action-result-" + UInt64ToString(distinct_id);
       auto channel = machine->DataChannel(channel_name);
-      channels.push(channel_name);
+      channels.push(channel);
 
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
