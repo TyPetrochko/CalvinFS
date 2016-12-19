@@ -172,7 +172,6 @@ class CalvinFSClientApp : public App {
           in.path(),
           in.old_master(),
           in.new_master()));
-    }
 
     // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
