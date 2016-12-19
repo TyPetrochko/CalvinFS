@@ -180,8 +180,8 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
   }
 
   // now that all RPCs have been sent, wait for responses
-  for (auto it = channel_names.begin(); it != channel_names.end(), it++) {
-    auto channel = machine()->DataChannel(*it);
+  for (auto it = channel_names.begin(); it != channel_names.end(); it++) {
+    auto channel = machine->DataChannel(*it);
     MessageBuffer* m = NULL;
     while (!channel->Pop(&m)) {
       // Wait for action to complete and be sent back.
