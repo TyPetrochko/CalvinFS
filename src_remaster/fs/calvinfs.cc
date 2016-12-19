@@ -5,6 +5,7 @@
 #include "fs/calvinfs.h"
 
 #include <map>
+#include <unordered_set>
 #include "common/utils.h"
 #include "components/log/log_app.h"
 #include "components/scheduler/scheduler.h"
@@ -20,6 +21,7 @@
 #include "machine/machine.h"
 
 using std::map;
+using std::unordered_set;
 using std::pair;
 using std::make_pair;
 
@@ -108,7 +110,7 @@ void CalvinFSConfigMap::Init(const CalvinFSConfig& config) {
 }
 
 uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir) {
-  if (masters_.count(dir)) {
+  if (masters_.count(dir) > 0) {
     // it already exists in the master map
     return masters_.at(dir);
   } else {
@@ -147,11 +149,14 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
   in.set_old_master(old_master);
   in.set_new_master(new_master);
 
+  unordered_set<string> channel_names;
+
   // send this to every other machine on this replica
   for (uint32 to_machine = 0; to_machine < GetPartitionsPerReplica(); to_machine++) {
     if (to_machine != machine->machine_id()) {
       uint64 distinct_id = machine->GetGUID();
       string channel_name = "action-result-" + UInt64ToString(distinct_id);
+      channel_names.insert(channel_name);
 
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
@@ -174,6 +179,15 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
     }
   }
 
+  // now that all RPCs have been sent, wait for responses
+  for (auto it = channel_names.begin(); it != channel_names.end(), it++) {
+    auto channel = machine()->DataChannel(*it);
+    MessageBuffer* m = NULL;
+    while (!channel->Pop(&m)) {
+      // Wait for action to complete and be sent back.
+      usleep(100);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
