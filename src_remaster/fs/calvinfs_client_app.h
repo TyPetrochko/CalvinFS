@@ -161,6 +161,19 @@ class CalvinFSClientApp : public App {
       // no reply expected
       RemasterFile(in.path(), in.old_master(), in.new_master());
 
+    // INTRA-REPLICA (very internal) file remaster
+    } else if (header->rpc() == "REMASTER_INTRAREPLICA") {
+      Action* a = new Action();
+      a->ParseFromArray((*message)[0].data(), (*message)[0].size());
+      MetadataAction::RemasterInput in;
+      in.ParseFromString(a->input());
+      // reply is expected
+      machine()->SendReplyMessage(header, LocalRemasterFile(
+          in.path(),
+          in.old_master(),
+          in.new_master()));
+    }
+
     // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
@@ -912,6 +925,7 @@ void LatencyExperimentRenameFile(int local_percentage) {
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
   void RemasterFile(string path, uint32 old_master, uint32 new_master);
+  MessageBuffer* LocalRemasterFile(string path, uint32 old_master, uint32 new_master);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();

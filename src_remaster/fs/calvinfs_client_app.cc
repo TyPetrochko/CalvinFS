@@ -346,4 +346,8 @@ void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_
   }
 }
 
+MessageBuffer* CalvinFSClientApp::LocalRemasterFile(string path, uint32 old_master, uint32 new_master) {
+  config_->ChangeReplicaForPath(path, new_master);
+}
+
 
