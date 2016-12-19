@@ -108,17 +108,72 @@ void CalvinFSConfigMap::Init(const CalvinFSConfig& config) {
 }
 
 uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir) {
-  
-  string top_dir = TopDir(dir);
-  // Root dir is a special case. Currently root belongs to replica 0
-  if (top_dir.empty()) {
-    return 0;
+  if (masters_.count(dir)) {
+    // it already exists in the master map
+    return masters_.at(dir);
+  } else {
+    // use default value for master, found by parsing the top directory
+    string top_dir = TopDir(dir);
+    // Root dir is a special case. Currently root belongs to replica 0
+    if (top_dir.empty()) {
+      return 0;
+    }
+
+    string num_string = string(top_dir, 2);
+    uint32 num = StringToInt(num_string);
+
+    uint32 master = num / config_.metadata_shard_count();
+    // no need to save this default value to the master-map,
+    // as every node will come up with the same value.
+    return master;
+  }
+}
+
+// Change what replica is the master of a given path
+// Only changes the local map.
+void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master) {
+  masters_[path] = new_master;
+}
+
+// This sends intra-replica RPCs and waits for responses
+// RPCs are sent from machine_id to all other machines in the same replica
+void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name) {
+  uint32 old_master = LookupReplicaByDir(path);
+  // change local map first
+  ChangeReplicaForPath(path, new_master);
+
+  MetadataAction::RemasterInput in;
+  in.set_path(path.data(), path.size());
+  in.set_old_master(old_master);
+  in.set_new_master(new_master);
+
+  // send this to every other machine on this replica
+  for (uint32 to_machine = 0; to_machine < GetPartitionsPerReplica(); to_machine++) {
+    if (to_machine != machine->machine_id()) {
+      uint64 distinct_id = machine->GetGUID();
+      string channel_name = "action-result-" + UInt64ToString(distinct_id);
+
+      Action* a = new Action();
+      a->set_client_machine(machine->machine_id());
+      a->set_client_channel(channel_name);
+      a->set_action_type(MetadataAction::REMASTER);
+      a->set_distinct_id(distinct_id);
+      a->set_single_replica(true);
+
+      in.SerializeToString(a->mutable_input());
+
+      Header* header = new Header();
+      header->set_from(machine->machine_id());
+      header->set_to(to_machine);
+      header->set_type(Header::RPC);
+      header->set_app(app_name);
+      header->set_rpc("REMASTER_INTRAREPLICA");
+      string* block = new string();
+      a->SerializeToString(block);
+      machine->SendMessage(header, new MessageBuffer(Slice(*block)));
+    }
   }
 
-  string num_string = string(top_dir, 2);
-  uint32 num = StringToInt(num_string);
-
-  return num / config_.metadata_shard_count();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
