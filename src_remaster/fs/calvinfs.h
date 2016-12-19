@@ -54,9 +54,9 @@ class CalvinFSConfigMap {
   // Only changes the local map.
   void ChangeReplicaForPath(string path, uint32 new_master);
 
-  // This sends intra-replica RPCs and waits for responses
+  // This sends intra-replica RPCs and optionally waits for responses
   // RPCs are sent from machine to all other machines in the same replica
-  void ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name);
+  void ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name, bool wait);
 
   uint64 GetPartitionsPerReplica();
 

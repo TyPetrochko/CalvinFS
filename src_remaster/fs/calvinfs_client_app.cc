@@ -329,8 +329,11 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
 void CalvinFSClientApp::RemasterFile(string path, uint32 old_master, uint32 new_master) {
   if (old_master != replica_) {
     LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at replica " << IntToString(new_master);
+    config_->ChangeReplicaForPath(path, new_master, machine(), name(), false);
   } else {
     LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
+    config_->ChangeReplicaForPath(path, new_master, machine(), name(), true);
+    // map has been updated locally on this replica. now path has no master.
     uint32 machines_per_replica = config_->GetPartitionsPerReplica();
     // forward remaster request to new master, and all other masters
     for (uint32 replica = 0; replica < config_->GetReplicas(); replica++) {

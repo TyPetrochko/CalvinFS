@@ -139,7 +139,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master) {
 
 // This sends intra-replica RPCs and waits for responses
 // RPCs are sent from machine_id to all other machines in the same replica
-void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name) {
+void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name, bool wait) {
   uint32 old_master = LookupReplicaByDir(path);
   // change local map first
   ChangeReplicaForPath(path, new_master);
@@ -152,12 +152,15 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
   stack<AtomicQueue<MessageBuffer*>*> channels;
 
   // send this to every other machine on this replica
-  for (uint32 to_machine = 0; to_machine < GetPartitionsPerReplica(); to_machine++) {
+  for (uint32 machine_index = 0; machine_index < GetPartitionsPerReplica(); machine_index++) {
+    uint32 to_machine = GetPartitionsPerReplica() * LookupReplica(machine->machine_id()) + machine_index;
     if (to_machine != machine->machine_id()) {
       uint64 distinct_id = machine->GetGUID();
       string channel_name = "action-result-" + UInt64ToString(distinct_id);
       auto channel = machine->DataChannel(channel_name);
-      channels.push(channel);
+      if (wait) {
+        channels.push(channel);
+      }
 
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
