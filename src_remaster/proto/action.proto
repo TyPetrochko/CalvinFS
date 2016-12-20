@@ -46,7 +46,8 @@ message Action {
   // w.r.t. the starting version for the ActionBatch.
   optional uint64 version_offset = 32;
 
-  required bool single_replica = 41;  
+  // everything is single-replica now
+  // required bool single_replica = 41;  
 
   optional uint32 origin = 42 [default = 0];
 
