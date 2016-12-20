@@ -59,6 +59,9 @@ message Action {
 
   optional bool fake_action = 46 [default = false];
 
+  // block log has to know whether it's a remaster
+  optional bool remaster = 47 [default = false];
+
   // Miscellaneous data.
   repeated Scalar misc = 51;
   

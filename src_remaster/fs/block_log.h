@@ -17,6 +17,7 @@
 #include "fs/batch.pb.h"
 #include "fs/block_store.h"
 #include "fs/calvinfs.h"
+#include "fs/metadata.pb.h"
 #include "machine/app/app.h"
 #include "proto/action.pb.h"
 
@@ -128,16 +129,21 @@ class BlockLogApp : public App {
         ActionBatch batch;
         uint64 actual_offset = 0;
 
+        // TODO Get all remaster requests from remaster_queue and hash 'em, and
+        // add to batch (set origin, set version offset, etc. too)
         for (int i = 0; i < count; i++) {
           Action* a = NULL;
           queue_.Pop(&a);
+          // TODO If it collides, send it as an "action RPC" to client app
           if (a->fake_action() == false) {
             a->set_version_offset(actual_offset++);
           }
 
-	  a->set_origin(config_->LookupReplica(machine()->machine_id()));
+          a->set_origin(config_->LookupReplica(machine()->machine_id()));
           batch.mutable_entries()->AddAllocated(a);
         }
+
+        // TODO Move all from remaster_postponed into queue or remaster_queue accordingly
 
         // Avoid multiple allocation.
         string* block = new string();
@@ -209,13 +215,28 @@ class BlockLogApp : public App {
         return;
       }
     }
-
+    
     if (header->rpc() == "APPEND") {
       Action* a = new Action();
       a->ParseFromArray((*message)[0].data(), (*message)[0].size());
       a->set_origin(replica_);
-      queue_.Push(a);
-//LOG(ERROR) << "Machine: "<<machine()->machine_id() <<" =>Block log recevie a APPEND request. distinct id is:"<< a->distinct_id()<<" from machine:"<<header->from();
+      if(a->remaster() == true){
+        switch(a->action_type()){
+          case MetadataAction::REMASTER:
+          case MetadataAction::REMASTER_SYNC:
+            remaster_queue_.Push(a);
+            break;
+          case MetadataAction::REMASTER_FOLLOW:
+            remaster_postponed_.Push(a);
+            break;
+          default:
+            LOG(FATAL) << "Unknown remaster command";
+        }
+      } else{
+        // regular action!
+        queue_.Push(a);
+      }
+      LOG(ERROR) << "Machine: "<<machine()->machine_id() <<" =>Block log recevie a APPEND request. distinct id is:"<< a->distinct_id()<<" from machine:"<<header->from();
     } else if (header->rpc() == "BATCH") {
       // Write batch block to local block store.
       uint64 block_id = header->misc_int(0);
@@ -252,13 +273,13 @@ class BlockLogApp : public App {
         }
 
         for (int j = 0; j < batch.entries(i).readset_size(); j++) {
-          if (config_->LookupReplicaByDir(batch.entries(i).readset(j)) == batch.entries(i).origin()) {
+          if (config_->LookupReplicaByDir(batch.entries(i).readset(j), machine()) == batch.entries(i).origin()) {
             uint64 mds = config_->HashFileName(batch.entries(i).readset(j));
             recipients.insert(config_->LookupMetadataShard(mds, replica_));
           }
         }
         for (int j = 0; j < batch.entries(i).writeset_size(); j++) {
-          if (config_->LookupReplicaByDir(batch.entries(i).writeset(j)) == batch.entries(i).origin()) {
+          if (config_->LookupReplicaByDir(batch.entries(i).writeset(j), machine()) == batch.entries(i).origin()) {
             uint64 mds = config_->HashFileName(batch.entries(i).writeset(j));
             recipients.insert(config_->LookupMetadataShard(mds, replica_));
           }
@@ -479,12 +500,18 @@ class BlockLogApp : public App {
 
   // Subbatches received.
   AtomicMap<uint64, ActionBatch*> subbatches_;
-
+  
   // Paxos log output.
   Source<UInt64Pair*>* batch_sequence_;
 
   // Pending append requests.
   AtomicQueue<Action*> queue_;
+  
+  // Pending remaster requests.
+  AtomicQueue<Action*> remaster_queue_;
+  
+  // Requests that have been postponed b/c remastering (including remaster)
+  AtomicQueue<Action*> remaster_postponed_;
 
   // Delayed deallocation queue.
   // TODO(agt): Ugh this is horrible, we should replace this with ref counting!

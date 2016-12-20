@@ -106,13 +106,14 @@ void CalvinFSConfigMap::Init(const CalvinFSConfig& config) {
                                config.metadata_shards(i).replica())] =
         config.metadata_shards(i).machine();
   }
-
 }
 
-uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir) {
-  if (masters_.count(dir) > 0) {
+uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir, Machine *machine) {
+  uint64 replica;
+  if (machine->Masters()->Lookup(dir, &replica)) {
+    LOG(ERROR) << "Looking up " << dir << " --> " << replica;
     // it already exists in the master map
-    return masters_.at(dir);
+    return (uint32) replica;
   } else {
     // use default value for master, found by parsing the top directory
     string top_dir = TopDir(dir);
@@ -133,16 +134,17 @@ uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir) {
 
 // Change what replica is the master of a given path
 // Only changes the local map.
-void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master) {
-  masters_[path] = new_master;
+void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine *machine) {
+  LOG(ERROR) << "Path " << path << " now maps to " << new_master;
+  machine->Masters()->Put(path, new_master);
 }
 
 // This sends intra-replica RPCs and waits for responses
 // RPCs are sent from machine_id to all other machines in the same replica
 void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name, bool wait) {
-  uint32 old_master = LookupReplicaByDir(path);
+  uint32 old_master = LookupReplicaByDir(path, machine);
   // change local map first
-  ChangeReplicaForPath(path, new_master);
+  ChangeReplicaForPath(path, new_master, machine);
 
   MetadataAction::RemasterInput in;
   in.set_path(path.data(), path.size());

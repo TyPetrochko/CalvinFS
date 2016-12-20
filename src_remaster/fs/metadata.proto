@@ -58,7 +58,9 @@ enum Type {
   WRITE              = 6;
   APPEND             = 7;
   CHANGE_PERMISSIONS = 8;
-  REMASTER           = 9;
+  REMASTER           = 9; // highest level
+  REMASTER_FOLLOW    = 10; // all other replicas follow
+  REMASTER_SYNC      = 11; // intra-replica synchronous remastering
 }
 
 // Possible error conditions.

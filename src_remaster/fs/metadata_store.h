@@ -46,7 +46,8 @@ class MetadataStore : public Store {
     string app_name,
     string path,
     uint32 old_master,
-    uint32 new_master);
+    uint32 new_master,
+    int type);
 
  private:
   void CreateFile_Internal(

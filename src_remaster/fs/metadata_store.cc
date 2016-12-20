@@ -186,7 +186,7 @@ class DistributedExecutionContext : public ExecutionContext {
     for (int i = 0; i < action->readset_size(); i++) {
       uint64 mds = config_->HashFileName(action->readset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
-      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i)) == origin_)) {
+      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i), machine_) == origin_)) {
         // Local read.
         if (!store_->Get(action->readset(i),
                          version_,
@@ -196,7 +196,7 @@ class DistributedExecutionContext : public ExecutionContext {
         reader_ = true;
       } else {
         //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
-        remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i))));
+        remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i), machine_)));
       }
     }
 
@@ -207,12 +207,12 @@ class DistributedExecutionContext : public ExecutionContext {
     for (int i = 0; i < action->writeset_size(); i++) {
       uint64 mds = config_->HashFileName(action->writeset(i));
       uint64 machine = config_->LookupMetadataShard(mds, replica_);
-      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i)) == origin_)) {
+      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i), machine_) == origin_)) {
         writer_ = true;
         //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
       } else {
         //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
-        remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i))));
+        remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i), machine_)));
       }
     }
 
@@ -265,14 +265,14 @@ class DistributedExecutionContext : public ExecutionContext {
       for (auto it = writes_.begin(); it != writes_.end(); ++it) {
         uint64 mds = config_->HashFileName(it->first);
         uint64 machine = config_->LookupMetadataShard(mds, replica_);
-        if (machine == machine_->machine_id() && config_->LookupReplicaByDir(it->first) == origin_) {
+        if (machine == machine_->machine_id() && config_->LookupReplicaByDir(it->first, machine_) == origin_) {
           store_->Put(it->first, it->second, version_);
         }
       }
       for (auto it = deletions_.begin(); it != deletions_.end(); ++it) {
         uint64 mds = config_->HashFileName(*it);
         uint64 machine = config_->LookupMetadataShard(mds, replica_);
-        if (machine == machine_->machine_id() && config_->LookupReplicaByDir(*it) == origin_) {
+        if (machine == machine_->machine_id() && config_->LookupReplicaByDir(*it, machine_) == origin_) {
           store_->Delete(*it, version_);
         }
       }
@@ -331,7 +331,7 @@ int RandomSize() {
 }
 
 uint32 MetadataStore::LookupReplicaByDir(string dir) {
-  return config_->LookupReplicaByDir(dir);
+  return config_->LookupReplicaByDir(dir, machine_);
 }
 
 /**uint32 MetadataStore::GetMachineForReplica(Action* action) {
@@ -369,7 +369,12 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   }
 }**/
 
-void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, string path, uint32 old_master, uint32 new_master) {
+/*
+ * 0 for REMASTER
+ * 1 for REMASTER_FOLLOW
+ * 2 for REMASTER_SYNC
+ */
+void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, string path, uint32 old_master, uint32 new_master, int type) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
 
@@ -379,7 +384,7 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, stri
   Action* a = new Action();
   a->set_client_machine(machine_id_);
   a->set_client_channel(channel_name);
-  a->set_action_type(MetadataAction::REMASTER);
+  a->set_action_type(MetadataAction::REMASTER_FOLLOW);
   a->set_distinct_id(distinct_id);
   a->set_single_replica(true);
 
@@ -397,7 +402,20 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, stri
   header->set_to(to_machine);
   header->set_type(Header::RPC);
   header->set_app(app_name);
-  header->set_rpc("REMASTER");
+  // do it immediately if intra-replica (sync), else follow in next batch
+  switch(type){
+    case 0:
+      header->set_rpc("REMASTER");
+      break;
+    case 1:
+      header->set_rpc("REMASTER_FOLLOW");
+      break;
+    case 2:
+      header->set_rpc("REMASTER_SYNC");
+      break;
+    default:
+      LOG(FATAL) << "Bad remaster type in SendRemasterRequest";
+  }
   string* block = new string();
   a->SerializeToString(block);
   machine_->SendMessage(header, new MessageBuffer(Slice(*block)));
@@ -451,7 +469,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
       uint32 old_master = it->second;
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
-        SendRemasterRequest(machine_sent, app_name, it->first, old_master, master);
+        SendRemasterRequest(machine_sent, app_name, it->first, old_master, master, 0);
       }
     }
   }

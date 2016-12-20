@@ -108,6 +108,10 @@ class Machine {
   AtomicMap<string, string>* AppData() {
     return &app_data_;
   }
+  
+  AtomicMap<string, uint64>* Masters() {
+    return &masters_;
+  }
 
   void GlobalBarrier();
 
@@ -134,6 +138,9 @@ class Machine {
 
   // Apps can store shared (but machine-local) config data here.
   AtomicMap<string, string> app_data_;
+  
+  // Master Map!
+  AtomicMap<string, uint64> masters_;
 
   // Pool of RPC execution threads. Owned by the Machine object.
   ThreadPool* thread_pool_;

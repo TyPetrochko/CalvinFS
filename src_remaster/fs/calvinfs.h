@@ -48,11 +48,11 @@ class CalvinFSConfigMap {
 
   // Lookup what replica is the master of a given path
   // If not yet mapped, uses deterministic default replica based on dir.
-  uint32 LookupReplicaByDir(string dir);
+  uint32 LookupReplicaByDir(string dir, Machine *machine);
 
   // Change what replica is the master of a given path
   // Only changes the local map.
-  void ChangeReplicaForPath(string path, uint32 new_master);
+  void ChangeReplicaForPath(string path, uint32 new_master, Machine *machine);
 
   // This sends intra-replica RPCs and optionally waits for responses
   // RPCs are sent from machine to all other machines in the same replica
@@ -74,8 +74,8 @@ class CalvinFSConfigMap {
   map<pair<uint64, uint64>, uint64> bluckets_;
   map<pair<uint64, uint64>, uint64> metadata_shards_;
 
-  // path -> replica
-  map<string, uint32> masters_;
+  // path -> replica MOVED TO MACHINE
+  // map<string, uint32> masters_;
 
 };
 
