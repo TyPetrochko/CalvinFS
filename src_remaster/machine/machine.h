@@ -109,7 +109,7 @@ class Machine {
     return &app_data_;
   }
   
-  AtomicMap<string, uint64>* Masters() {
+  AtomicMap<string, uint32>* Masters() {
     return &masters_;
   }
 
@@ -140,7 +140,7 @@ class Machine {
   AtomicMap<string, string> app_data_;
   
   // Master Map!
-  AtomicMap<string, uint64> masters_;
+  AtomicMap<string, uint32> masters_;
 
   // Pool of RPC execution threads. Owned by the Machine object.
   ThreadPool* thread_pool_;

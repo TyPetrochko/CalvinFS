@@ -109,7 +109,7 @@ void CalvinFSConfigMap::Init(const CalvinFSConfig& config) {
 }
 
 uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir, Machine *machine) {
-  uint64 replica;
+  uint32 replica;
   if (machine->Masters()->Lookup(dir, &replica)) {
     LOG(ERROR) << "Looking up " << dir << " --> " << replica;
     // it already exists in the master map
