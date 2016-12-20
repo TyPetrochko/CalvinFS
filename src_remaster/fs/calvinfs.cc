@@ -132,6 +132,32 @@ uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir, Machine *machine) {
   }
 }
 
+void CalvinFSConfigMap::LookupInvolvedReplicas(Action* action) {
+  action->clear_involved_replicas();
+  set<uint32> replica_involved;
+
+  // LookupReplicaByDir may be slow, so keep a map for every path in read and write sets
+  map<string, uint32> local_master_map;
+
+  for (int i = 0; i < action->writeset_size(); i++) {
+    uint32 replica = LookupReplicaByDir(action->writeset(i));
+    replica_involved.insert(replica);
+    local_master_map[action->writeset(i)] = replica;
+  }
+
+  for (int i = 0; i < action->readset_size(); i++) {
+    uint32 replica = LookupReplicaByDir(action->readset(i));
+    replica_involved.insert(replica);
+    local_master_map[action->readset(i)] = replica;
+  }
+
+  CHECK(replica_involved.size() >= 1);
+  
+  for (set<uint32>::iterator it=replica_involved.begin(); it!=replica_involved.end(); ++it) {
+    action->add_involved_replicas(*it);
+  }
+}
+
 // Change what replica is the master of a given path
 // Only changes the local map.
 void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine *machine) {

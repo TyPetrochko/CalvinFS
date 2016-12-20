@@ -50,6 +50,10 @@ class CalvinFSConfigMap {
   // If not yet mapped, uses deterministic default replica based on dir.
   uint32 LookupReplicaByDir(string dir, Machine *machine);
 
+  // sets the involved_replicas field on the action based on machine's current
+  // master map
+  void LookupInvolvedReplicas(Action* action);
+
   // Change what replica is the master of a given path
   // Only changes the local map.
   void ChangeReplicaForPath(string path, uint32 new_master, Machine *machine);

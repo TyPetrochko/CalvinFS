@@ -387,29 +387,9 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, stri
 }
 
 uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
-  action->clear_involved_replicas();
-  set<uint32> replica_involved;
+  config_->LookupInvolvedReplicas(action);
 
-  // LookupReplicaByDir may be slow, so keep a map for every path in read and write sets
-  map<string, uint32> local_master_map;
-
-  for (int i = 0; i < action->writeset_size(); i++) {
-    uint32 replica = LookupReplicaByDir(action->writeset(i));
-    replica_involved.insert(replica);
-    local_master_map[action->writeset(i)] = replica;
-  }
-
-  for (int i = 0; i < action->readset_size(); i++) {
-    uint32 replica = LookupReplicaByDir(action->readset(i));
-    replica_involved.insert(replica);
-    local_master_map[action->readset(i)] = replica;
-  }
-
-  CHECK(replica_involved.size() >= 1);
-  
-  for (set<uint32>::iterator it=replica_involved.begin(); it!=replica_involved.end(); ++it) {
-    action->add_involved_replicas(*it);
-  }
+  set<uint32> replica_involved = action->involved_replicas();
 
   uint32 master;
 
