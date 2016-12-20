@@ -190,7 +190,7 @@ class BlockLogApp : public App {
   void RemasterFile(string path, uint32 old_master, uint32 new_master) {
     if (old_master != replica_) {
       LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at replica " << IntToString(new_master);
-      config_->ChangeReplicaForPath(path, new_master, machine(), name(), false);
+      config_->ChangeReplicaForPath(path, new_master, machine(), false);
     } else {
       LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
       
