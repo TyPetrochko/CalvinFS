@@ -104,10 +104,6 @@ class CalvinFSClientApp : public App {
       case 10:
         CrashExperiment();
         break;
-
-      case 11:
-        RemasterExperiment();
-        break;
     }
 
   }
@@ -783,53 +779,8 @@ void LatencyExperimentAppend() {
                << "Renamed " <<  "500 files. Elapsed time: "
                << (GetTime() - start) << " seconds";
   }
-  
-  void RemasterExperiment() {
-    LOG(ERROR) << "Starting remaster experiment on node " << machine()->machine_id();
-    uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
-    uint64 replicas_num = config_->GetReplicas();
-    vector<uint64> machines_other_replicas;      
 
-    for (uint64 i = 0; i < partitions_per_replica * replicas_num; i++) {
-      if (i/partitions_per_replica != replica_) {
-        machines_other_replicas.push_back(i);
-      }
-    }
-
-    uint64 size_other_machines = machines_other_replicas.size();
-    
-    Spin(1);
-    metadata_->Init();
-    Spin(1);
-    machine()->GlobalBarrier();
-    Spin(1);
-
-    double start = GetTime();
-    LOG(ERROR) << "Starting up experiments!";
-    for (int j = 0; j < 500; j++) {
-      uint32 other_machine = machines_other_replicas[rand() % size_other_machines];
-      // Remastering is not really an external transaction that can be sent
-      // It can only be triggered by a transaction involving multiple files
-      // which already exist and are mastered separately
-      // Renaming involves metadata of both parent directories and one file.
-      BackgroundRenameFile(
-          "/a" + IntToString(machine()->machine_id()) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(j),
-          "/a" + IntToString(other_machine) + "/b" + IntToString(rand() % 1000) + "/c" + IntToString(machine()->GetGUID()));
-
-      if (j % 100 == 0) {
-        LOG(ERROR) << "[" << machine()->machine_id() << "] "
-                   << "Test progress : " << j / 100 << "/" << 5;
-      }    
-    }
-    // Report.
-    LOG(ERROR) << "[" << machine()->machine_id() << "] "
-               << "Renamed " <<  "500 files. Elapsed time: "
-               << (GetTime() - start) << " seconds";
-
-    // LOG(FATAL) << "Remaster experiment not done yet!";
-  }
-
-void LatencyExperimentRenameFile(int local_percentage) {
+  void LatencyExperimentRenameFile(int local_percentage) {
     // Setup.
     uint64 partitions_per_replica = config_->GetPartitionsPerReplica();
     uint64 replicas_num = config_->GetReplicas();
