@@ -165,9 +165,9 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
   machine->Masters()->Put(path, new_master);
 }
 
-// This sends intra-replica RPCs and waits for responses
+// This sends intra-replica RPCs and optionally waits for responses
 // RPCs are sent from machine_id to all other machines in the same replica
-void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, string app_name, bool wait) {
+void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, bool wait) {
   uint32 old_master = LookupReplicaByDir(path, machine);
   // change local map first
   ChangeReplicaForPath(path, new_master, machine);
@@ -202,7 +202,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
       header->set_from(machine->machine_id());
       header->set_to(to_machine);
       header->set_type(Header::RPC);
-      header->set_app(app_name);
+      header->set_app("blocklog");
       header->set_rpc("REMASTER_INTRAREPLICA");
       string* block = new string();
       a->SerializeToString(block);

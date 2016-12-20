@@ -187,6 +187,41 @@ class BlockLogApp : public App {
     going_ = false;
   }
 
+  void RemasterFile(string path, uint32 old_master, uint32 new_master) {
+    if (old_master != replica_) {
+      LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at replica " << IntToString(new_master);
+      config_->ChangeReplicaForPath(path, new_master, machine(), name(), false);
+    } else {
+      LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
+      
+      // Send the REMASTER action to our own block log
+      metadata_->SendRemasterRequest(machine()->machine_id(), path, old_master, new_master, 0);
+      
+      // map has been updated locally on this replica. now path has no master.
+      uint32 machines_per_replica = config_->GetPartitionsPerReplica();
+
+      // TODO actually make this synchronous!
+      // "synchronously" (not really - yet) update all other partitions in this replica
+      for(uint32 partition = 0; partition < machines_per_replica; partition++){
+        uint32 machine_to_update = replica_ * machines_per_replica + partition;
+        if(machine_to_update != machine()->machine_id()){
+          LOG(ERROR) << "'Synchronously' updating node " << machine_to_update;
+          metadata_->SendRemasterRequest(machine_to_update, path, old_master, new_master, 2);
+        }
+      }
+      
+      // forward remaster request to new master, and all other masters
+      for (uint32 replica = 0; replica < config_->GetReplicas(); replica++) {
+        if (replica != replica_) {
+          // forward to everyone else
+          uint32 dest = replica * machines_per_replica + rand() % machines_per_replica;
+          LOG(ERROR) << "Sent REMASTER_FOLLOW to node " << dest;
+          metadata_->SendRemasterRequest(dest, path, old_master, new_master, 1);
+        }
+      }
+    }
+  }
+
   virtual void Stop() {
     go_ = false;
     while (going_.load()) {
@@ -233,6 +268,7 @@ class BlockLogApp : public App {
             remaster_queue_.Push(a);
             break;
           case MetadataAction::REMASTER_FOLLOW:
+            // TODO forward to other things in this replica
             // change master map at the end of the next epoch
             remaster_postponed_.Push(a);
             break;

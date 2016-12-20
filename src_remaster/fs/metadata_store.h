@@ -43,7 +43,6 @@ class MetadataStore : public Store {
   uint32 GetMachineForReplica(Action* action, string app_name);
 
   void SendRemasterRequest(uint32 to_machine,
-    string app_name,
     string path,
     uint32 old_master,
     uint32 new_master,

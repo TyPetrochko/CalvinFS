@@ -339,7 +339,7 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
  * 1 for REMASTER_FOLLOW
  * 2 for REMASTER_SYNC
  */
-void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, string path, uint32 old_master, uint32 new_master, int type) {
+void MetadataStore::SendRemasterRequest(uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
 
@@ -365,7 +365,7 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string app_name, stri
   header->set_from(machine_id_);
   header->set_to(to_machine);
   header->set_type(Header::RPC);
-  header->set_app(app_name);
+  header->set_app("blocklog");
   // do it immediately if intra-replica (sync), else follow in next batch
   switch(type){
     case 0:
@@ -1102,14 +1102,4 @@ void MetadataStore::ChangePermissions_Internal(
     const MetadataAction::ChangePermissionsInput& in,
     MetadataAction::ChangePermissionsOutput* out) {
   LOG(FATAL) << "not implemented";
-}
-
-// How to get this called when read and write sets are just the one thing?
-void MetadataStore::Remaster_Internal(
-    ExecutionContext* context,
-    const MetadataAction::RemasterInput& in,
-    MetadataAction::RemasterOutput* out) {
-  // TODO send some RPCs!
-  LOG(ERROR) << "TODO: remaster not implemented yet! See metadata_store.cc::Remaster_Internal\n\t"
-    << "Machine: " << machine_->machine_id() << "; File: " << in.path() << "; New master: " << UInt32ToString(in.new_master());
 }
