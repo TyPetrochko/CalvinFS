@@ -175,10 +175,10 @@ class DistributedExecutionContext : public ExecutionContext {
     aborted_ = false;
     origin_ = action->origin();
 
-    bool is_remaster = action.action_type() == MetadataAction::REMASTER
-        || action.action_type() == MetadataAction::REMASTER_FOLLOW
-        || action.action_type() == MetadataAction::REMASTER_ASYNC
-        || action.action_type() == MetadataAction::REMASTER_SYNC;
+    bool is_remaster = action->action_type() == MetadataAction::REMASTER
+        || action->action_type() == MetadataAction::REMASTER_FOLLOW
+        || action->action_type() == MetadataAction::REMASTER_ASYNC
+        || action->action_type() == MetadataAction::REMASTER_SYNC;
 
     data_channel_version = action->distinct_id();
     // LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
