@@ -639,6 +639,7 @@ void MetadataStore::GetRWSets(Action* action) {
 }
 
 void MetadataStore::Run(Action* action) {
+  LOG(ERROR) << "Machine "<<machine_id_ << " is about to run transaction with type "<< action->action_type()<<" id "<<action->distinct_id();
   // Prepare by performing all reads.
   ExecutionContext* context;
   if (machine_ == NULL) {
