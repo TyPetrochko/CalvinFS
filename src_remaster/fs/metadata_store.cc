@@ -370,6 +370,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
         // this is the entry point for remastering
+        LOG(ERROR) << "Sending remaster request to "<<IntToString(machine_sent);
         config_->SendRemasterRequest(machine_, machine_sent, it->first, old_master, master, 0);
       }
     }
