@@ -328,6 +328,7 @@ class BlockLogApp : public App {
       } else{
         if (a->action_type() == MetadataAction::RENAME) {
           // reply immediately
+          LOG(ERROR) << "IMMEDIATELY REPLYING!";
           machine()->SendReplyMessage(header, new MessageBuffer(*a));
         } else {
         // regular action!
