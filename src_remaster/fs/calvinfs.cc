@@ -224,7 +224,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
 }
 
 /*
- * 0 for REMASTER
+ * 0 for REMASTER (send to one node on old master)
  * 1 for REMASTER_FOLLOW
  * 2 for REMASTER_SYNC
  */
@@ -238,6 +238,20 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
   Action* a = new Action();
   a->set_client_machine(machine->machine_id());
   a->set_client_channel(channel_name);
+  switch (type) {
+    case 0:
+      a->set_action_type(MetadataAction::REMASTER);
+      break;
+    case 1:
+      a->set_action_type(MetadataAction::REMASTER_FOLLOW);
+      break;
+    case 2:
+      a->set_action_type(MetadataAction::REMASTER_SYNC);
+      break;
+    default:
+      LOG(FATAL) << "Bad remaster type in SendRemasterRequest";
+  }
+  a->set_remaster(true);
   a->set_action_type(MetadataAction::REMASTER_FOLLOW);
   a->set_distinct_id(distinct_id);
 
@@ -255,20 +269,7 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
   header->set_to(to_machine);
   header->set_type(Header::RPC);
   header->set_app("blocklog");
-  // do it immediately if intra-replica (sync), else follow in next batch
-  switch(type){
-    case 0:
-      header->set_rpc("REMASTER");
-      break;
-    case 1:
-      header->set_rpc("REMASTER_FOLLOW");
-      break;
-    case 2:
-      header->set_rpc("REMASTER_SYNC");
-      break;
-    default:
-      LOG(FATAL) << "Bad remaster type in SendRemasterRequest";
-  }
+  header->set_rpc("APPEND");
   string* block = new string();
   a->SerializeToString(block);
   machine->SendMessage(header, new MessageBuffer(Slice(*block)));
