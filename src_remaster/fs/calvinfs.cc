@@ -207,9 +207,11 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
   }
 
   // now that all RPCs have been sent, wait for responses
+  LOG(ERROR) << "Begin waiting for synchronous responses";
   while (ack_counter.load() < to_expect) {
     usleep(10);
   }
+  LOG(ERROR) << "Done waiting for synchronous responses";
 }
 
 void CalvinFSConfigMap::SendRemasterFollows(MetadataAction::RemasterInput in, Machine* machine) {
