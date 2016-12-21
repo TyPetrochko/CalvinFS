@@ -167,6 +167,7 @@ class BlockLogApp : public App {
           remaster_actions.pop_back();
           a->set_version_offset(actual_offset++);
           a->set_origin(current_replica);
+          LOG(ERROR) << "Adding action "<<IntToString(a->distinct_id())<<" to the batch";
           batch.mutable_entries()->AddAllocated(a);
         }
 
