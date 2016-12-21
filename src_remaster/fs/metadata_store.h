@@ -42,12 +42,6 @@ class MetadataStore : public Store {
   // requests to the provided app if remastering is necessary.
   uint32 GetMachineForReplica(Action* action);
 
-  void SendRemasterRequest(uint32 to_machine,
-    string path,
-    uint32 old_master,
-    uint32 new_master,
-    int type);
-
  private:
   void CreateFile_Internal(
       ExecutionContext* context,

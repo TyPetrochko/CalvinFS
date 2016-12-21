@@ -63,6 +63,8 @@ class CalvinFSConfigMap {
   // RPCs are sent from machine to all other machines in the same replica
   void SendIntrareplicaRemasterRequests(MetadataAction::RemasterInput in, Machine* machine, bool wait);
 
+  void SendRemasterFollows(MetadataAction::RemasterInput in, Machine* machine);
+
   // sends remaster request to block log
   void SendRemasterRequest(Machine* machine, uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type);
 

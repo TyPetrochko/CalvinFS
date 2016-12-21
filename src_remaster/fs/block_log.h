@@ -221,14 +221,14 @@ class BlockLogApp : public App {
   bool ActionIsLocal(Action* a, set<string>* dangerous_paths) {
     map<string, uint32> masters;
     // figures out what replicas are needed by a and for which files
-    config_->LookupInvolvedReplicas(a, &masters);
+    config_->LookupInvolvedReplicas(a, machine(), &masters);
     for (auto it = masters.begin(); it != masters.end(); it++) {
       if (it->second != replica_) {
         LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
             " must re-queue " << it->first << " because it's not mastered here";
         return false;
       }
-      if (dangerous_paths->find(it->first) != dangerous_paths.end()) {
+      if (dangerous_paths->find(it->first) != dangerous_paths->end()) {
         LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
             " must re-queue " << it->first << " because the path is being remastered";
         return false;
@@ -247,41 +247,6 @@ class BlockLogApp : public App {
     string* block = new string();
     a->SerializeToString(block);
     machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
-  }
-
-  void RemasterFile(string path, uint32 old_master, uint32 new_master) {
-    if (old_master != replica_) {
-      LOG(ERROR) << "Replica " << IntToString(replica_) << " must change " << path << " to be mastered at replica " << IntToString(new_master);
-      config_->ChangeReplicaForPath(path, new_master, machine(), false);
-    } else {
-      LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
-      
-      // Send the REMASTER action to our own block log
-      config_->SendRemasterRequest(machine(), machine()->machine_id(), path, old_master, new_master, 0);
-      
-      // map has been updated locally on this replica. now path has no master.
-      uint32 machines_per_replica = config_->GetPartitionsPerReplica();
-
-      // TODO actually make this synchronous!
-      // "synchronously" (not really - yet) update all other partitions in this replica
-      for(uint32 partition = 0; partition < machines_per_replica; partition++){
-        uint32 machine_to_update = replica_ * machines_per_replica + partition;
-        if(machine_to_update != machine()->machine_id()){
-          LOG(ERROR) << "'Synchronously' updating node " << machine_to_update;
-          config_->SendRemasterRequest(machine(), machine_to_update, path, old_master, new_master, 2);
-        }
-      }
-      
-      // forward remaster request to new master, and all other masters
-      for (uint32 replica = 0; replica < config_->GetReplicas(); replica++) {
-        if (replica != replica_) {
-          // forward to everyone else
-          uint32 dest = replica * machines_per_replica + rand() % machines_per_replica;
-          LOG(ERROR) << "Sent REMASTER_FOLLOW to node " << dest;
-          config_->SendRemasterRequest(machine(), dest, path, old_master, new_master, 1);
-        }
-      }
-    }
   }
 
   virtual void Stop() {
@@ -326,6 +291,8 @@ class BlockLogApp : public App {
             // sent to some node on old master.
             // send synchronously to other machines on this replica
             config_->SendIntrareplicaRemasterRequests(in, machine(), true);
+            // now send REMASTER_FOLLOWS to other replicas
+            config_->SendRemasterFollows(in, machine());
           case MetadataAction::REMASTER_SYNC:
             // sent to every other node on a replica
             // change master-map at the end of this epoch

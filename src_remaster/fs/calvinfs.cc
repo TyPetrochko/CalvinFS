@@ -216,6 +216,19 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
   }
 }
 
+void CalvinFSConfigMap::SendRemasterFollows(MetadataAction::RemasterInput in, Machine* machine) {
+  // send this to a random machine on each replica
+  // forward remaster request to new master, and all other masters
+  for (uint32 replica = 0; replica < config_->GetReplicas(); replica++) {
+    if (replica != LookupReplica(machine->machine_id())) {
+      // forward to everyone else
+      uint32 dest = replica * machines_per_replica + rand() % machines_per_replica;
+      LOG(ERROR) << "Sent REMASTER_FOLLOW to node " << dest;
+      config_->SendRemasterRequest(machine, dest, in.path(), in.old_master(), in.new_master(), 1);
+    }
+  }
+}
+
 /*
  * 0 for REMASTER (send to one node on old master)
  * 1 for REMASTER_FOLLOW
