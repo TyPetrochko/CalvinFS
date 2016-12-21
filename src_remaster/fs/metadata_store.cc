@@ -341,6 +341,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   set<uint32> replica_involved;
   for (int i = 0; i < action->involved_replicas_size(); i++) {
     replica_involved.insert(action->involved_replicas(i));
+    LOG(ERROR) << "replica involved: " << IntToString(action->involved_replicas(i));
   }
 
   uint32 master;
