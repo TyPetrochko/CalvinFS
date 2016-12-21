@@ -334,64 +334,12 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   return config_->LookupReplicaByDir(dir, machine_);
 }
 
-/*
- * 0 for REMASTER
- * 1 for REMASTER_FOLLOW
- * 2 for REMASTER_SYNC
- */
-void MetadataStore::SendRemasterRequest(uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
-  // sends remaster request as a transaction, even though it's a really weird
-  // kind of transaction.
-
-  uint64 distinct_id = machine_->GetGUID();
-  string channel_name = "action-result-" + UInt64ToString(distinct_id);
-
-  Action* a = new Action();
-  a->set_client_machine(machine_id_);
-  a->set_client_channel(channel_name);
-  a->set_action_type(MetadataAction::REMASTER_FOLLOW);
-  a->set_distinct_id(distinct_id);
-
-  MetadataAction::RemasterInput in;
-  in.set_path(path.data(), path.size());
-  in.set_old_master(old_master);
-  in.set_new_master(new_master);
-  in.SerializeToString(a->mutable_input());
-  // don't bother with read and write sets, with any luck this will never be
-  // executed in the regular way.
-
-  // send this to a random machine on the old master replica
-  Header* header = new Header();
-  header->set_from(machine_id_);
-  header->set_to(to_machine);
-  header->set_type(Header::RPC);
-  header->set_app("blocklog");
-  // do it immediately if intra-replica (sync), else follow in next batch
-  switch(type){
-    case 0:
-      header->set_rpc("REMASTER");
-      break;
-    case 1:
-      header->set_rpc("REMASTER_FOLLOW");
-      break;
-    case 2:
-      header->set_rpc("REMASTER_SYNC");
-      break;
-    default:
-      LOG(FATAL) << "Bad remaster type in SendRemasterRequest";
-  }
-  string* block = new string();
-  a->SerializeToString(block);
-  machine_->SendMessage(header, new MessageBuffer(Slice(*block)));
-  // completely asynchronous: do not wait for response
-}
-
 uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
   config_->LookupInvolvedReplicas(action);
 
   set<uint32> replica_involved;
   for (int i = 0; i < action->involved_replicas_size(); i++) {
-    replica_involved.add(action->involved_replicas(i));
+    replica_involved.insert(action->involved_replicas(i));
   }
 
   uint32 master;
@@ -410,7 +358,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
       uint32 old_master = it->second;
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
-        SendRemasterRequest(machine_sent, app_name, it->first, old_master, master, 0);
+        config_->SendRemasterRequest(machine_sent, app_name, it->first, old_master, master, 0);
       }
     }
   }

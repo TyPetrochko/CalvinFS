@@ -62,6 +62,9 @@ class CalvinFSConfigMap {
   // RPCs are sent from machine to all other machines in the same replica
   void ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, bool wait);
 
+  // sends remaster request to block log
+  void SendRemasterRequest(uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type);
+
   uint64 GetPartitionsPerReplica();
 
   uint64 GetReplicas();
