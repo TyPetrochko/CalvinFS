@@ -806,9 +806,9 @@ void LatencyExperimentAppend() {
                            "/a" + IntToString(machines_other_replicas[rand()%size_other_machines]) + "/b" + IntToString(rand() % 1000) + "/d" + IntToString(machine()->GetGUID()));
         }     
 
-        if (j % 100 == 0) {
+        if (true) {
           LOG(ERROR) << "[" << machine()->machine_id() << "] "
-                   << "Test progress : " << j / 100 << "/" << 5;
+                   << "Test progress : " << j << "/" << 500;
         } 
     }
 
