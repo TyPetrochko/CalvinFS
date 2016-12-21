@@ -358,6 +358,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
       master = it->second;
       action->set_dest_replica(master);
     }
+    LOG(ERROR) << "Chosen master to be "<<IntToString(master);
 
     // send remaster requests to the old masters
     for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
