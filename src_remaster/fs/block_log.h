@@ -172,7 +172,7 @@ class BlockLogApp : public App {
           LOG(ERROR) << "HACK CHANGING MAP FROM BLOCK_LOG";
           MetadataAction::RemasterInput in;
           in.ParseFromString(a->input());
-          config_->ChangeReplicaForPath(in.path(), in.new_master(), in.old_master());
+          config_->ChangeReplicaForPath(in.path(), in.new_master(), machine());
           // batch.mutable_entries()->AddAllocated(a);
         }
 
