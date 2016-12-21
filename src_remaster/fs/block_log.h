@@ -195,7 +195,7 @@ class BlockLogApp : public App {
       LOG(ERROR) << "Replica " << IntToString(replica_) << " was master. Now must change " << path << " to be mastered at replica " << IntToString(new_master);
       
       // Send the REMASTER action to our own block log
-      config_->SendRemasterRequest(machine()->machine_id(), path, old_master, new_master, 0);
+      config_->SendRemasterRequest(machine(), machine()->machine_id(), path, old_master, new_master, 0);
       
       // map has been updated locally on this replica. now path has no master.
       uint32 machines_per_replica = config_->GetPartitionsPerReplica();
@@ -206,7 +206,7 @@ class BlockLogApp : public App {
         uint32 machine_to_update = replica_ * machines_per_replica + partition;
         if(machine_to_update != machine()->machine_id()){
           LOG(ERROR) << "'Synchronously' updating node " << machine_to_update;
-          config_->SendRemasterRequest(machine_to_update, path, old_master, new_master, 2);
+          config_->SendRemasterRequest(machine(), machine_to_update, path, old_master, new_master, 2);
         }
       }
       
@@ -216,7 +216,7 @@ class BlockLogApp : public App {
           // forward to everyone else
           uint32 dest = replica * machines_per_replica + rand() % machines_per_replica;
           LOG(ERROR) << "Sent REMASTER_FOLLOW to node " << dest;
-          config_->SendRemasterRequest(dest, path, old_master, new_master, 1);
+          config_->SendRemasterRequest(machine(), dest, path, old_master, new_master, 1);
         }
       }
     }

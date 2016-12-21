@@ -228,15 +228,15 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
  * 1 for REMASTER_FOLLOW
  * 2 for REMASTER_SYNC
  */
-void CalvinFSConfigMap::SendRemasterRequest(uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
+void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
 
-  uint64 distinct_id = machine_->GetGUID();
+  uint64 distinct_id = machine->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
 
   Action* a = new Action();
-  a->set_client_machine(machine_id_);
+  a->set_client_machine(machine->machine_id());
   a->set_client_channel(channel_name);
   a->set_action_type(MetadataAction::REMASTER_FOLLOW);
   a->set_distinct_id(distinct_id);
@@ -251,7 +251,7 @@ void CalvinFSConfigMap::SendRemasterRequest(uint32 to_machine, string path, uint
 
   // send this to a random machine on the old master replica
   Header* header = new Header();
-  header->set_from(machine_id_);
+  header->set_from(machine->machine_id());
   header->set_to(to_machine);
   header->set_type(Header::RPC);
   header->set_app("blocklog");
@@ -271,7 +271,7 @@ void CalvinFSConfigMap::SendRemasterRequest(uint32 to_machine, string path, uint
   }
   string* block = new string();
   a->SerializeToString(block);
-  machine_->SendMessage(header, new MessageBuffer(Slice(*block)));
+  machine->SendMessage(header, new MessageBuffer(Slice(*block)));
   // completely asynchronous: do not wait for response
 }
 
