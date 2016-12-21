@@ -197,6 +197,7 @@ class DistributedExecutionContext : public ExecutionContext {
       // local reader and writer only.
       writer_ = true;
       reader_ = true;
+      LOG(ERROR) << "Creating distributed execution context for txn "<<action->distinct_id()<<" with type "<<action->action_type();
 
     } else {
       for (int i = 0; i < action->readset_size(); i++) {
