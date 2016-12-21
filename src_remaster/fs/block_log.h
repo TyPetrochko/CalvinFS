@@ -228,7 +228,7 @@ class BlockLogApp : public App {
       if (it->second != replica_) {
         LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
             " must re-queue " << it->first << " because it's not mastered here. is mastered on "<<it->second
-            <<". action id is " << action.distinct_id() << " type is " << action.action_type();
+            <<". action id is " << a->distinct_id() << " type is " << a->action_type();
         return false;
       }
       if (dangerous_paths->find(it->first) != dangerous_paths->end()) {
