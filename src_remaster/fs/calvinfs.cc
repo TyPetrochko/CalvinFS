@@ -141,14 +141,12 @@ void CalvinFSConfigMap::LookupInvolvedReplicas(Action* action, Machine* machine,
 
   for (int i = 0; i < action->writeset_size(); i++) {
     uint32 replica = LookupReplicaByDir(action->writeset(i), machine);
-    LOG(ERROR) << "path in writeset " << action->writeset(i) << " maps to " << replica;
     replica_involved.insert(replica);
     (*master_map)[action->writeset(i)] = replica;
   }
 
   for (int i = 0; i < action->readset_size(); i++) {
     uint32 replica = LookupReplicaByDir(action->readset(i), machine);
-    LOG(ERROR) << "path in readset " << action->writeset(i) << " maps to " << replica;
     replica_involved.insert(replica);
     (*master_map)[action->readset(i)] = replica;
   }
