@@ -327,7 +327,6 @@ class BlockLogApp : public App {
         }
       } else{
         // regular action!
-        LOG(ERROR) << "machine "<<machine()->machine_id()<<" enqueue action with id "<<a->distinct_id();
         queue_.Push(a);
       }
       // LOG(ERROR) << "Machine: "<<machine()->machine_id() <<" =>Block log recevie a APPEND request. distinct id is:"<< a->distinct_id()<<" from machine:"<<header->from();
@@ -387,6 +386,7 @@ class BlockLogApp : public App {
             }
           }
         }
+        LOG(ERROR) << "machine "<<machine()->machine_id()<<" has action as part of batch with id "<<batch.entries(i).distinct_id();
 
         for (auto it = recipients.begin(); it != recipients.end(); ++it) {
           subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
