@@ -335,7 +335,8 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
 }
 
 uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
-  config_->LookupInvolvedReplicas(action);
+  map<string, uint32> local_master_map;
+  config_->LookupInvolvedReplicas(action, &local_master_map);
 
   set<uint32> replica_involved;
   for (int i = 0; i < action->involved_replicas_size(); i++) {
