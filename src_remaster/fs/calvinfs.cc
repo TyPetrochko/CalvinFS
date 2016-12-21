@@ -168,15 +168,8 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
 
 // This sends intra-replica RPCs and optionally waits for responses
 // RPCs are sent from machine_id to all other machines in the same replica
-void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Machine* machine, bool wait) {
-  uint32 old_master = LookupReplicaByDir(path, machine);
-  // change local map first
-  ChangeReplicaForPath(path, new_master, machine);
-
-  MetadataAction::RemasterInput in;
-  in.set_path(path.data(), path.size());
-  in.set_old_master(old_master);
-  in.set_new_master(new_master);
+void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::RemasterInput in, Machine* machine, bool wait) {
+  // don't change local map. that happens when the remaster txn is executed.
 
   stack<AtomicQueue<MessageBuffer*>*> channels;
 
@@ -194,7 +187,8 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
       a->set_client_channel(channel_name);
-      a->set_action_type(MetadataAction::REMASTER);
+      a->set_action_type(MetadataAction::REMASTER_SYNC);
+      a->set_remaster(true);
       a->set_distinct_id(distinct_id);
 
       in.SerializeToString(a->mutable_input());
@@ -204,7 +198,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
       header->set_to(to_machine);
       header->set_type(Header::RPC);
       header->set_app("blocklog");
-      header->set_rpc("REMASTER_INTRAREPLICA");
+      header->set_rpc("APPEND");
       string* block = new string();
       a->SerializeToString(block);
       machine->SendMessage(header, new MessageBuffer(Slice(*block)));

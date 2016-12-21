@@ -148,6 +148,9 @@ class CalvinFSClientApp : public App {
           header->misc_string(0),
           header->misc_string(1)));
 
+    } else if (header->rpc() == "ACTION") {
+
+
     // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
@@ -853,6 +856,7 @@ void LatencyExperimentAppend() {
   MessageBuffer* LS(const Slice& path);
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
+  void RouteAction(Action* a);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();

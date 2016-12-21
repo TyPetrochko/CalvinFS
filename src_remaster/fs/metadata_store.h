@@ -40,7 +40,7 @@ class MetadataStore : public Store {
   // determines to which machine a transaction must be sent
   // (must be on master replica). Sends asynchronous MetadataAction::REMASTER
   // requests to the provided app if remastering is necessary.
-  uint32 GetMachineForReplica(Action* action, string app_name);
+  uint32 GetMachineForReplica(Action* action);
 
   void SendRemasterRequest(uint32 to_machine,
     string path,

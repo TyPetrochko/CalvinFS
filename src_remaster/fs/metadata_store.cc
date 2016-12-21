@@ -334,7 +334,7 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
   return config_->LookupReplicaByDir(dir, machine_);
 }
 
-uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
+uint32 MetadataStore::GetMachineForReplica(Action* action) {
   map<string, uint32> local_master_map;
   config_->LookupInvolvedReplicas(action, machine_, &local_master_map);
 
@@ -349,10 +349,15 @@ uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
     // this is a single-master transaction.
     master = *(replica_involved.begin());
   } else {
-    // choose one replica at random to be the new master.
-    auto it = local_master_map.begin();
-    advance(it, rand() % local_master_map.size());
-    master = it->second;
+    if (action->has_dest_replica()) {
+      master = action->dest_replica();
+    } else {
+      // choose one replica at random to be the new master.
+      auto it = local_master_map.begin();
+      advance(it, rand() % local_master_map.size());
+      master = it->second;
+      action->set_dest_replica(master);
+    }
 
     // send remaster requests to the old masters
     for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
@@ -605,19 +610,6 @@ void MetadataStore::GetRWSets(Action* action) {
     MetadataAction::RemasterInput in;
     in.ParseFromString(action->input());
     action->add_readset(in.path());
-    action->add_readset(ParentDir(in.path()));
-    
-    // this is some black magic...
-    // fake a rename "/a1/file" --> "/a5/file" so we get the right R/W set
-    string top_dir = TopDir(in.path());
-    string rest = in.path().substr(top_dir.length());
-    string fake_path = in.path().substr(0, 2) + UInt64ToString(in.node()) + rest;
-
-    // LOG(ERROR) << "Faking a rename " << in.path() << " --> " << fake_path;
-
-    action->add_writeset(fake_path);
-    action->add_readset(ParentDir(fake_path));
-    action->add_writeset(ParentDir(fake_path));
     */
     
   } else {
@@ -707,7 +699,9 @@ void MetadataStore::Run(Action* action) {
     ChangePermissions_Internal(context, in, &out);
     out.SerializeToString(action->mutable_output());
   
-  } else if (type == MetadataAction::REMASTER) {
+  } else if (type == MetadataAction::REMASTER
+          || type == MetadataAction::REMASTER_FOLLOW
+          || type == MetadataAction::REMASTER_SYNC) {
     MetadataAction::RemasterInput in;
     MetadataAction::RemasterOutput out;
     in.ParseFromString(action->input());

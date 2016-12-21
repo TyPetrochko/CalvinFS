@@ -63,6 +63,11 @@ message Action {
   // block log has to know whether it's a remaster
   optional bool remaster = 47 [default = false];
 
+  // keep track of where the txn is supposed to be mastered.
+  // this is important to avoid the remastering requests chasing the txn
+  // if it were always assigned a different dest_replica
+  optional uint32 dest_replica = 48;
+
   // Miscellaneous data.
   repeated Scalar misc = 51;
   

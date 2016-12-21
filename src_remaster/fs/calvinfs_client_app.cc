@@ -221,6 +221,22 @@ MessageBuffer* CalvinFSClientApp::LS(const Slice& path) {
   }
 }
 
+void CalvinFSClientApp::RouteAction(Action* a) {
+  // don't modify action, especially channel_name which determines how results
+  // actually get back to the client
+  uint32 dest = metadata_->GetMachineForReplica(a);
+  Header* header = new Header();
+  header->set_from(machine()->machine_id());
+  header->set_to(dest);
+  header->set_type(Header::RPC);
+  header->set_app("blocklog");
+  header->set_rpc("APPEND");
+  string* block = new string();
+  a->SerializeToString(block);
+  machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
+  // don't wait.
+}
+
 MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& to_path) {
   uint64 distinct_id = machine()->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
@@ -240,7 +256,7 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
   metadata_->GetRWSets(a);
   
   // Send the action to the log of machine_sent
-  uint32 machine_sent = metadata_->GetMachineForReplica(a, name());
+  uint32 machine_sent = metadata_->GetMachineForReplica(a);
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(machine_sent);
@@ -257,7 +273,7 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
     usleep(100);
   }
 
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::CopyFile completed ^^^^^^  distinct id is:"<<distinct_id;
+  //LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":^^^^^^^^ CalvinFSClientApp::CopyFile completed ^^^^^^  distinct id is:"<<distinct_id;
 
   Action result;
   result.ParseFromArray((*m)[0].data(), (*m)[0].size());

@@ -124,23 +124,54 @@ class BlockLogApp : public App {
 
       // Create batch (iff there are any pending requests).
       int count = queue_.Size();
-      if (count != 0) {
+      int remaster_count = remaster_queue_.Size();
+      if (count > 0 || remaster_count > 0) {
         ActionBatch batch;
         uint64 actual_offset = 0;
+        uint32 current_replica = config_->LookupReplica(machine()->machine_id());
 
-        // TODO Get all remaster requests from remaster_queue and hash 'em, and
-        // add to batch (set origin, set version offset, etc. too)
+        vector<Action*> remaster_actions;
+        set<string> dangerous_paths;
+        for (int i = 0; i < remaster_count; i++) {
+          Action* a = NULL;
+          remaster_queue_.Pop(&a);
+          remaster_actions.push_back(a);
+          MetadataAction::RemasterInput in;
+          in.ParseFromString(a->input());
+          dangerous_paths.insert(in.path());
+        }
+
+        // copy regular actions into batch
         for (int i = 0; i < count; i++) {
           Action* a = NULL;
           queue_.Pop(&a);
-          // TODO If it collides, send it as an "action RPC" to client app
-          a->set_version_offset(actual_offset++);
 
-          a->set_origin(config_->LookupReplica(machine()->machine_id()));
+          // want to make sure this action has all files it needs mastered
+          // locally, and that none of them are being remastered away
+          // by any remaster transaction (assume all actions are run in parallel)
+          if (ActionIsLocal(a, &dangerous_paths)) {
+            a->set_version_offset(actual_offset++);
+            a->set_origin(current_replica);
+            batch.mutable_entries()->AddAllocated(a);
+          } else {
+            // if not all files are mastered here, forward up to the client to
+            // do some forwarding or remastering.
+            SendUpToClient(a);
+          }
+          // TODO If it collides, send it as an "action RPC" to client app
+        }
+
+        // copy remaster actions into batch
+        for (int i = 0; i < remaster_count; i++) {
+          Action* a = remaster_actions.back();
+          remaster_actions.pop_back();
+          a->set_version_offset(actual_offset++);
+          a->set_origin(current_replica);
           batch.mutable_entries()->AddAllocated(a);
         }
 
-        // TODO Move all from remaster_postponed into remaster_queue accordingly
+        // Move all from remaster_postponed into remaster_queue,
+        // so they will be put with the next batch.
         Action* remaster_action = NULL;
         while (remaster_postponed_.Pop(&remaster_action)) {
           remaster_queue_.Push(remaster_action);
@@ -185,6 +216,37 @@ class BlockLogApp : public App {
     }
 
     going_ = false;
+  }
+
+  bool ActionIsLocal(Action* a, set<string>* dangerous_paths) {
+    map<string, uint32> masters;
+    // figures out what replicas are needed by a and for which files
+    config_->LookupInvolvedReplicas(a, &masters);
+    for (auto it = masters.begin(); it != masters.end(); it++) {
+      if (it->second != replica_) {
+        LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
+            " must re-queue " << it->first << " because it's not mastered here";
+        return false;
+      }
+      if (dangerous_paths->find(it->first) != dangerous_paths.end()) {
+        LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
+            " must re-queue " << it->first << " because the path is being remastered";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void SendUpToClient(Action* a) {
+    Header* header = new Header();
+    header->set_from(machine()->machine_id());
+    header->set_to(machine()->machine_id());
+    header->set_type(Header::RPC);
+    header->set_app("client");
+    header->set_rpc("ACTION");
+    string* block = new string();
+    a->SerializeToString(block);
+    machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
   }
 
   void RemasterFile(string path, uint32 old_master, uint32 new_master) {
@@ -257,19 +319,21 @@ class BlockLogApp : public App {
       a->ParseFromArray((*message)[0].data(), (*message)[0].size());
       a->set_origin(replica_);
       if(a->remaster()){
+        MetadataAction::RemasterInput in;
+        in.ParseFromString(a->input());
         switch(a->action_type()){
           case MetadataAction::REMASTER:
             // sent to some node on old master.
-            // have to record this txn to forward to other replicas after it's
-            // executed on this one.
+            // send synchronously to other machines on this replica
+            config_->SendIntrareplicaRemasterRequests(in, machine(), true);
           case MetadataAction::REMASTER_SYNC:
             // sent to every other node on a replica
             // change master-map at the end of this epoch
             remaster_queue_.Push(a);
             break;
           case MetadataAction::REMASTER_FOLLOW:
-            // TODO forward to other things in this replica
             // change master map at the end of the next epoch
+            config_->SendIntrareplicaRemasterRequests(in, machine(), false);
             remaster_postponed_.Push(a);
             break;
           default:
