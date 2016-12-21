@@ -610,13 +610,14 @@ void MetadataStore::GetRWSets(Action* action) {
     action->add_readset(in.path());
     action->add_writeset(in.path());
 
-  } else if (type == MetadataAction::REMASTER) {
-    LOG(FATAL) << "Remaster txns have no read or write sets";
-    /*
+  } else if (type == MetadataAction::REMASTER
+            || type == MetadataAction::REMASTER_FOLLOW
+            || type == MetadataAction::REMASTER_ASYNC
+            || type == MetadataAction::REMASTER_SYNC) {
     MetadataAction::RemasterInput in;
     in.ParseFromString(action->input());
     action->add_readset(in.path());
-    */
+    action->add_writeset(in.path());
     
   } else {
     LOG(FATAL) << "invalid action type";
@@ -634,7 +635,6 @@ void MetadataStore::Run(Action* action) {
   }
 
   if (!context->IsWriter()) {
-    LOG(ERROR) << "WE'RE NOT A WRITER SO ABORT";
     delete context;
     return;
   }

@@ -189,6 +189,8 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
       a->set_distinct_id(distinct_id);
 
       in.SerializeToString(a->mutable_input());
+      a->add_readset(in.path());
+      a->add_writeset(in.path());
 
       Header* header = new Header();
       header->set_from(machine->machine_id());
@@ -270,6 +272,8 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
   in.set_old_master(old_master);
   in.set_new_master(new_master);
   in.SerializeToString(a->mutable_input());
+  a->add_readset(path);
+  a->add_writeset(path);
   // don't bother with read and write sets, with any luck this will never be
   // executed in the regular way.
 
