@@ -388,7 +388,6 @@ class BlockLogApp : public App {
         }
 
         for (auto it = recipients.begin(); it != recipients.end(); ++it) {
-          LOG(ERROR) << "Subbatch sent to machine "<<(*it)<<" with txn number "<<batch.entries(i).distinct_id();
           subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
         }
       }
@@ -414,6 +413,9 @@ class BlockLogApp : public App {
       uint64 block_id = header->misc_int(0);
       ActionBatch* batch = new ActionBatch();
       batch->ParseFromArray((*message)[0].data(), (*message)[0].size());
+      for (int i = 0; i < batch->entries_size(); i++) {
+        LOG(ERROR) << "Subbatch received at machine "<<machine()->machine_id()<<" containing txn "<<batch->entries(i).distinct_id();
+      }
       subbatches_.Put(block_id, batch);
     } else if (header->rpc() == "APPEND_MULTIREPLICA_ACTIONS") {
       MessageBuffer* m = NULL;
