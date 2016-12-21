@@ -702,7 +702,8 @@ void MetadataStore::Run(Action* action) {
   
   } else if (type == MetadataAction::REMASTER
           || type == MetadataAction::REMASTER_FOLLOW
-          || type == MetadataAction::REMASTER_SYNC) {
+          || type == MetadataAction::REMASTER_SYNC
+          || type == MetadataAction::REMASTER_ASYNC) {
     MetadataAction::RemasterInput in;
     MetadataAction::RemasterOutput out;
     in.ParseFromString(action->input());

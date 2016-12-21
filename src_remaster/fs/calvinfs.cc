@@ -186,7 +186,7 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
       a->set_client_channel(channel_name);
-      a->set_action_type(MetadataAction::REMASTER_SYNC);
+      a->set_action_type(wait ? MetadataAction::REMASTER_SYNC : MetadataAction::REMASTER_ASYNC);
       a->set_remaster(true);
       a->set_distinct_id(distinct_id);
 
@@ -233,6 +233,7 @@ void CalvinFSConfigMap::SendRemasterFollows(MetadataAction::RemasterInput in, Ma
  * 0 for REMASTER (send to one node on old master)
  * 1 for REMASTER_FOLLOW
  * 2 for REMASTER_SYNC
+ * 3 for REMASTER_ASYNC
  */
 void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
   // sends remaster request as a transaction, even though it's a really weird
@@ -254,6 +255,9 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
       break;
     case 2:
       a->set_action_type(MetadataAction::REMASTER_SYNC);
+      break;
+    case 3:
+      a->set_action_type(MetadataAction::REMASTER_ASYNC);
       break;
     default:
       LOG(FATAL) << "Bad remaster type in SendRemasterRequest";

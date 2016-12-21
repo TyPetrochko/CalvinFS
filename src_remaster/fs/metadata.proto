@@ -61,6 +61,7 @@ enum Type {
   REMASTER           = 9; // highest level
   REMASTER_FOLLOW    = 10; // all other replicas follow
   REMASTER_SYNC      = 11; // intra-replica synchronous remastering
+  REMASTER_ASYNC     = 12; // intra-replica asynchronous remastering
 }
 
 // Possible error conditions.
