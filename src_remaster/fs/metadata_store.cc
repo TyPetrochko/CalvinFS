@@ -349,50 +349,97 @@ uint32 MetadataStore::LookupReplicaByDir(string dir) {
 }
 
 uint32 MetadataStore::GetMachineForReplica(Action* action) {
-  map<string, uint32> local_master_map;
-  config_->LookupInvolvedReplicas(action, machine_, &local_master_map);
-
   set<uint32> replica_involved;
-  for (int i = 0; i < action->involved_replicas_size(); i++) {
-    replica_involved.insert(action->involved_replicas(i));
+
+  for (int i = 0; i < action->writeset_size(); i++) {
+    uint32 replica = LookupReplicaByDir(action->writeset(i));
+    replica_involved.insert(replica);
   }
 
-  uint32 master;
+  for (int i = 0; i < action->readset_size(); i++) {
+    uint32 replica = LookupReplicaByDir(action->readset(i));
+    replica_involved.insert(replica);
+  }
+
+  CHECK(replica_involved.size() >= 1);
 
   if (replica_involved.size() == 1) {
-    // this is a single-master transaction.
-    master = *(replica_involved.begin());
+    action->set_single_replica(true);
   } else {
-    if (action->has_dest_replica()) {
-      master = action->dest_replica();
-    } else {
-      // choose one replica at random to be the new master.
-      auto it = local_master_map.begin();
-      advance(it, rand() % local_master_map.size());
-      master = it->second;
-      action->set_dest_replica(master);
-    }
-    LOG(ERROR) << "Chosen master to be "<<IntToString(master);
+    action->set_single_replica(false);
+  }
+  
+  for (set<uint32>::iterator it=replica_involved.begin(); it!=replica_involved.end(); ++it) {
+    action->add_involved_replicas(*it);
+  }
+  
+  uint32 lowest_replica = *(replica_involved.begin());
 
-    // send remaster requests to the old masters
-    for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
-      uint32 old_master = it->second;
-      if (old_master != master) {
-        uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
-        // this is the entry point for remastering
-        LOG(ERROR) << "Sending remaster request to "<<IntToString(machine_sent);
-        config_->SendRemasterRequest(machine_, machine_sent, it->first, old_master, master, 0);
+  // Always send cross-replica actions to the first replica
+  if (replica_involved.size() == 1) {
+    if (lowest_replica == replica_) {
+      return machine_id_;
+    } else {
+      return lowest_replica * machines_per_replica_ + rand() % machines_per_replica_;
+    }
+  } else {
+    if (lowest_replica != 0) {
+      action->set_fake_action(true);
+      return rand() % machines_per_replica_;
+    }  else {
+      if (replica_ == 0) {
+        return machine_id_;
+      } else {
+        return rand() % machines_per_replica_;
       }
     }
   }
 
-  if (master == replica_) {
-    // mastered on this replica. handle it here
-    return machine_id_;
-  } else {
-    // mastered on another replica. send it over there to a random machine
-    return master * machines_per_replica_ + rand() % machines_per_replica_;
-  }
+
+  // map<string, uint32> local_master_map;
+  // config_->LookupInvolvedReplicas(action, machine_, &local_master_map);
+
+  // set<uint32> replica_involved;
+  // for (int i = 0; i < action->involved_replicas_size(); i++) {
+  //   replica_involved.insert(action->involved_replicas(i));
+  // }
+
+  // uint32 master;
+
+  // if (replica_involved.size() == 1) {
+  //   // this is a single-master transaction.
+  //   master = *(replica_involved.begin());
+  // } else {
+  //   if (action->has_dest_replica()) {
+  //     master = action->dest_replica();
+  //   } else {
+  //     // choose one replica at random to be the new master.
+  //     auto it = local_master_map.begin();
+  //     advance(it, rand() % local_master_map.size());
+  //     master = it->second;
+  //     action->set_dest_replica(master);
+  //   }
+  //   LOG(ERROR) << "Chosen master to be "<<IntToString(master);
+
+  //   // send remaster requests to the old masters
+  //   for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
+  //     uint32 old_master = it->second;
+  //     if (old_master != master) {
+  //       uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
+  //       // this is the entry point for remastering
+  //       LOG(ERROR) << "Sending remaster request to "<<IntToString(machine_sent);
+  //       config_->SendRemasterRequest(machine_, machine_sent, it->first, old_master, master, 0);
+  //     }
+  //   }
+  // }
+
+  // if (master == replica_) {
+  //   // mastered on this replica. handle it here
+  //   return machine_id_;
+  // } else {
+  //   // mastered on another replica. send it over there to a random machine
+  //   return master * machines_per_replica_ + rand() % machines_per_replica_;
+  // }
 }
 
 uint64 MetadataStore::GetHeadMachine(uint64 machine_id) {
