@@ -634,6 +634,7 @@ void MetadataStore::Run(Action* action) {
   }
 
   if (!context->IsWriter()) {
+    LOG(ERROR) << "WE'RE NOT A WRITER SO ABORT";
     delete context;
     return;
   }
