@@ -52,7 +52,7 @@ class CalvinFSConfigMap {
 
   // sets the involved_replicas field on the action based on machine's current
   // master map
-  void LookupInvolvedReplicas(Action* action, map<string, uint32>* master_map);
+  void LookupInvolvedReplicas(Action* action, Machine* machine, map<string, uint32>* master_map);
 
   // Change what replica is the master of a given path
   // Only changes the local map.

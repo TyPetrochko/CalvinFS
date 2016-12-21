@@ -134,20 +134,20 @@ uint32 CalvinFSConfigMap::LookupReplicaByDir(string dir, Machine *machine) {
   }
 }
 
-void CalvinFSConfigMap::LookupInvolvedReplicas(Action* action, map<string, uint32>* master_map) {
+void CalvinFSConfigMap::LookupInvolvedReplicas(Action* action, Machine* machine, map<string, uint32>* master_map) {
   action->clear_involved_replicas();
   set<uint32> replica_involved;
 
   // LookupReplicaByDir may be slow, so keep a map for every path in read and write sets
 
   for (int i = 0; i < action->writeset_size(); i++) {
-    uint32 replica = LookupReplicaByDir(action->writeset(i));
+    uint32 replica = LookupReplicaByDir(action->writeset(i), machine);
     replica_involved.insert(replica);
     (*master_map)[action->writeset(i)] = replica;
   }
 
   for (int i = 0; i < action->readset_size(); i++) {
-    uint32 replica = LookupReplicaByDir(action->readset(i));
+    uint32 replica = LookupReplicaByDir(action->readset(i), machine);
     replica_involved.insert(replica);
     (*master_map)[action->readset(i)] = replica;
   }
