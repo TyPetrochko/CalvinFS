@@ -348,6 +348,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   if (replica_involved.size() == 1) {
     // this is a single-master transaction.
     master = *(replica_involved.begin());
+    LOG(ERROR) << "Single replica transaction to master " << IntToString(master);
   } else {
     if (action->has_dest_replica()) {
       master = action->dest_replica();
