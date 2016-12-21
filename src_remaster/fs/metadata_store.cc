@@ -389,7 +389,10 @@ void MetadataStore::SendRemasterRequest(uint32 to_machine, string path, uint32 o
 uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
   config_->LookupInvolvedReplicas(action);
 
-  set<uint32> replica_involved = action->involved_replicas();
+  set<uint32> replica_involved;
+  for (int i = 0; i < action->involved_replicas_size(); i++) {
+    replica_involved.add(action->involved_replicas(i));
+  }
 
   uint32 master;
 
