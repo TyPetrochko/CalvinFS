@@ -337,7 +337,6 @@ class BlockLogApp : public App {
       bool need_submit = header->misc_bool(0);
 
       blocks_->Put(block_id, (*message)[0]);
-//LOG(ERROR) << "Machine: "<<machine()->machine_id() << " =>Block log recevie a BATCH request. block id is:"<< block_id <<" from machine:"<<header->from()<<" , batch size is:"<<batch_size;
       // Parse batch.
       ActionBatch batch;
       batch.ParseFromArray((*message)[0].data(), (*message)[0].size());
@@ -354,6 +353,8 @@ class BlockLogApp : public App {
         header->add_misc_int(block_id);
         header->add_misc_int(batch_size);
         machine()->SendMessage(header, new MessageBuffer());
+      }else {
+        // LOG(ERROR)<<"Didn't send SUBMIT b/c"<<config_->LookupReplica(message_from_)<<" != "<<replica_;
       }
 
       // Forward sub-batches to relevant readers (same replica only).
@@ -393,98 +394,6 @@ class BlockLogApp : public App {
         header->add_misc_int(block_id);
         machine()->SendMessage(header, new MessageBuffer(subbatches[*it]));
       }
-
-      // Forward "relevant multi-replica action" to the head node 
-      if (config_->LookupReplica(message_from_) != replica_) {
-        ActionBatch fake_action_batch;
-        for (int i = 0; i < batch.entries_size(); i++) {
-          if (batch.entries(i).single_replica() == false && batch.entries(i).new_generated() == false) {
-            for (int j = 0; j < batch.entries(i).involved_replicas_size(); j++) {
-              if (batch.entries(i).involved_replicas(j) == replica_) {
-//LOG(ERROR) << "Machine: "<<machine()->machine_id() << " =>Add the faked multi-replicas actions into batch. block id: "<<block_id<<"  distinct_id:"<<batch.entries(i).distinct_id();
-                 fake_action_batch.add_entries()->CopyFrom(batch.entries(i));
-                 break;
-              }
-            }
-          }
-        }
-
-        // Send to the head node
-        header = new Header();
-        header->set_from(machine()->machine_id());
-        header->set_to(local_paxos_leader_);
-        header->set_type(Header::RPC);
-        header->set_app(name());
-        header->set_rpc("FAKEACTIONBATCH");
-        header->add_misc_int(block_id);
-        machine()->SendMessage(header, new MessageBuffer(fake_action_batch));
-//LOG(ERROR) << "Machine: "<<machine()->machine_id() << " Send FAKEACTIONBATCH . block id: "<<block_id<<"  size(): "<<fake_action_batch.entries_size();
-      }
-      
-
-      // // Write batch block to local block store.
-      // uint64 block_id = header->misc_int(0);
-      // uint64 batch_size = header->misc_int(1);
-      // bool need_submit = header->misc_bool(0);
-
-      // blocks_->Put(block_id, (*message)[0]);
-      // // Parse batch.
-      // ActionBatch batch;
-      // batch.ParseFromArray((*message)[0].data(), (*message)[0].size());
-      // uint64 message_from_ = header->from();
-
-      // //  If (This batch come from this replica) → send SUBMIT to the Sequencer(LogApp) on the master node of the local paxos participants
-      // if (config_->LookupReplica(message_from_) == replica_ && need_submit == true) {
-      //   Header* header = new Header();
-      //   header->set_from(machine()->machine_id());
-      //   header->set_to(local_paxos_leader_);  // Local Paxos leader.
-      //   header->set_type(Header::RPC);
-      //   header->set_app(name());
-      //   header->set_rpc("SUBMIT");
-      //   header->add_misc_int(block_id);
-      //   header->add_misc_int(batch_size);
-      //   machine()->SendMessage(header, new MessageBuffer());
-      // }else {
-      //   // LOG(ERROR)<<"Didn't send SUBMIT b/c"<<config_->LookupReplica(message_from_)<<" != "<<replica_;
-      // }
-
-      // // Forward sub-batches to relevant readers (same replica only).
-      // map<uint64, ActionBatch> subbatches;
-      // for (int i = 0; i < batch.entries_size(); i++) {
-      //   set<uint64> recipients;
-    
-      //   if (batch.entries(i).fake_action() == true) {
-      //     continue;        
-      //   }
-
-      //   for (int j = 0; j < batch.entries(i).readset_size(); j++) {
-      //     if (config_->LookupReplicaByDir(batch.entries(i).readset(j), machine()) == batch.entries(i).origin()) {
-      //       uint64 mds = config_->HashFileName(batch.entries(i).readset(j));
-      //       recipients.insert(config_->LookupMetadataShard(mds, replica_));
-      //     }
-      //   }
-      //   for (int j = 0; j < batch.entries(i).writeset_size(); j++) {
-      //     if (config_->LookupReplicaByDir(batch.entries(i).writeset(j), machine()) == batch.entries(i).origin()) {
-      //       uint64 mds = config_->HashFileName(batch.entries(i).writeset(j));
-      //       recipients.insert(config_->LookupMetadataShard(mds, replica_));
-      //     }
-      //   }
-
-      //   for (auto it = recipients.begin(); it != recipients.end(); ++it) {
-      //     subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
-      //   }
-      // }
-
-      // for (auto it = mds_.begin(); it != mds_.end(); ++it) {
-      //   header = new Header();
-      //   header->set_from(machine()->machine_id());
-      //   header->set_to(*it);
-      //   header->set_type(Header::RPC);
-      //   header->set_app(name());
-      //   header->set_rpc("SUBBATCH");
-      //   header->add_misc_int(block_id);
-      //   machine()->SendMessage(header, new MessageBuffer(subbatches[*it]));
-      // }
 
     } else if (header->rpc() == "SUBMIT") {
 
