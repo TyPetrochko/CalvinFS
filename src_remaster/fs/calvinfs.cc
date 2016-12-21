@@ -237,6 +237,7 @@ void CalvinFSConfigMap::SendRemasterFollows(MetadataAction::RemasterInput in, Ma
 void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine, string path, uint32 old_master, uint32 new_master, int type) {
   // sends remaster request as a transaction, even though it's a really weird
   // kind of transaction.
+  LOG(ERROR) << "Sending remaster request to "<< IntToString(to_machine);
 
   uint64 distinct_id = machine->GetGUID();
   string channel_name = "action-result-" + UInt64ToString(distinct_id);
