@@ -327,6 +327,7 @@ class BlockLogApp : public App {
         }
       } else{
         // regular action!
+        LOG(ERROR) << "enqueue action with id "<<a->distinct_id();
         queue_.Push(a);
       }
       // LOG(ERROR) << "Machine: "<<machine()->machine_id() <<" =>Block log recevie a APPEND request. distinct id is:"<< a->distinct_id()<<" from machine:"<<header->from();
