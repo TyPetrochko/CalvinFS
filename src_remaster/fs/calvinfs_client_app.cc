@@ -77,6 +77,7 @@ MessageBuffer* CalvinFSClientApp::CreateFile(const Slice& path, FileType type) {
   machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
 
   MessageBuffer* m = NULL;
+  LOG(ERROR) << "waiting for create to complete on machine "<<machine()->machine_id();
   while (!channel->Pop(&m)) {
     // Wait for action to complete and be sent back.
     usleep(100);
