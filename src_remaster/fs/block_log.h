@@ -169,9 +169,9 @@ class BlockLogApp : public App {
           a->set_origin(current_replica);
           LOG(ERROR) << "Adding action "<<IntToString(a->distinct_id())<<" to the batch";
           // remaster it right here, because adding it to the batch doesn't work
-          LOG(ERROR) << "HACK CHANGING MAP FROM BLOCK_LOG";
           MetadataAction::RemasterInput in;
           in.ParseFromString(a->input());
+          LOG(ERROR) << "HACK CHANGING MAP FROM BLOCK_LOG on machine "<<machine()->machine_id()<<" for path /"<<in.path()<<" changing master "<<in.old_master()<<"->"<<in.new_master();
           config_->ChangeReplicaForPath(in.path(), in.new_master(), machine());
           // batch.mutable_entries()->AddAllocated(a);
         }
