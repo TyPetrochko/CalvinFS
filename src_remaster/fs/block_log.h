@@ -42,7 +42,6 @@ class SequenceSource : public Source<UInt64Pair*> {
   virtual bool Get(UInt64Pair** p) {
     // Get a non-empty sequence or return false.
     while (current_ == NULL) {
-      LOG(ERROR) << "BLOCKLOG SPIN A";
       if (!source_->Get(&current_)) {
         return false;
       }
@@ -584,7 +583,6 @@ class BlockLogApp : public App {
     virtual ~ActionSource() {}
     virtual bool Get(Action** a) {
       while (true) {
-        LOG(ERROR) << "BLOCKLOG SPIN F";
         // Make sure we have a valid (i.e. non-zero) subbatch_id_, or return
         // false if we can't get one.
         if (subbatch_id_ == 0) {

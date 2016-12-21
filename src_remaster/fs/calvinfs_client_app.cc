@@ -80,7 +80,6 @@ MessageBuffer* CalvinFSClientApp::CreateFile(const Slice& path, FileType type) {
   MessageBuffer* m = NULL;
   LOG(ERROR) << "waiting for create with id "<<distinct_id<<" to complete on machine "<<machine()->machine_id();
   while (!channel->Pop(&m)) {
-    LOG(ERROR) << "SPIN B";
     // Wait for action to complete and be sent back.
     usleep(100);
   }
