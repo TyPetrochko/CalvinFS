@@ -706,6 +706,8 @@ void MetadataStore::Run(Action* action) {
     MetadataAction::RemasterOutput out;
     in.ParseFromString(action->input());
     config_->ChangeReplicaForPath(in.path(), in.new_master(), machine_);
+    LOG(ERROR) << "Actually changing master map on machine "<<IntToString(machine_->machine_id())<<" for path "
+    << in.path() << " from master "<<IntToString(in.old_master())<<" to master "<<IntToString(in.new_master());
     out.SerializeToString(action->mutable_output());
 
   } else {
