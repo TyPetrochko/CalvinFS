@@ -348,7 +348,6 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   if (replica_involved.size() == 1) {
     // this is a single-master transaction.
     master = *(replica_involved.begin());
-    LOG(ERROR) << "Single replica transaction to master " << IntToString(master);
   } else {
     if (action->has_dest_replica()) {
       master = action->dest_replica();
@@ -359,15 +358,12 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
       master = it->second;
       action->set_dest_replica(master);
     }
-    LOG(ERROR) << "Multi-replica transaction to master " << IntToString(master);
 
     // send remaster requests to the old masters
     for (auto it = local_master_map.begin(); it != local_master_map.end(); it++) {
       uint32 old_master = it->second;
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
-        LOG(ERROR) << "Remastering "<<it->first<<" from "<<IntToString(old_master)<<" to "
-        <<IntToString(master)<<" sending from "<<machine_->machine_id()<<" to "<<IntToString(machine_sent);
         // this is the entry point for remastering
         config_->SendRemasterRequest(machine_, machine_sent, it->first, old_master, master, 0);
       }

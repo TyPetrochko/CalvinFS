@@ -284,6 +284,7 @@ class BlockLogApp : public App {
       a->ParseFromArray((*message)[0].data(), (*message)[0].size());
       a->set_origin(replica_);
       if(a->remaster()){
+        LOG(ERROR) << "Received remaster request on machine " << IntToString(machine()->machine_id());
         MetadataAction::RemasterInput in;
         in.ParseFromString(a->input());
         switch(a->action_type()){
