@@ -353,6 +353,8 @@ class BlockLogApp : public App {
         header->add_misc_int(block_id);
         header->add_misc_int(batch_size);
         machine()->SendMessage(header, new MessageBuffer());
+      }else{
+        LOG(ERROR) << "Skipping!!!"<<endl;
       }
 
       // Forward sub-batches to relevant readers (same replica only).
