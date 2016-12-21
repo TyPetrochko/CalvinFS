@@ -226,7 +226,7 @@ class BlockLogApp : public App {
     for (auto it = masters.begin(); it != masters.end(); it++) {
       if (it->second != replica_) {
         LOG(ERROR) << "Machine "<<IntToString(machine()->machine_id()) <<
-            " must re-queue " << it->first << " because it's not mastered here";
+            " must re-queue " << it->first << " because it's not mastered here:"<<it->second;
         return false;
       }
       if (dangerous_paths->find(it->first) != dangerous_paths->end()) {

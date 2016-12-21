@@ -66,11 +66,10 @@ void LockingScheduler::MainLoopBody() {
 
       running_action_count_++;
       store_->RunAsync(action, &completed_);
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ Get Lock immediately:" << action->version()<<" distinct id is:"<<action->distinct_id();
-    } 
-else {
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ BLOCK:" << action->version()<<" distinct id is:"<<action->distinct_id();
-}
+      //LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ Get Lock immediately:" << action->version()<<" distinct id is:"<<action->distinct_id();
+    } else {
+      //LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ BLOCK:" << action->version()<<" distinct id is:"<<action->distinct_id();
+    }
   }
 
   // Process all actions that have finished running.
@@ -105,7 +104,7 @@ else {
 
   // Start executing all actions that have newly acquired all their locks.
   while (lm_.Ready(&action)) {
-//LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ Previous blocked, now active:" << action->version()<<" distinct id is:"<<action->distinct_id();    
+    //LOG(ERROR) << "Machine: "<<machine()->machine_id()<<":------------ Previous blocked, now active:" << action->version()<<" distinct id is:"<<action->distinct_id();    
     running_action_count_++;
     store_->RunAsync(action, &completed_);
   }
