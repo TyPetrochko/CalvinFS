@@ -189,6 +189,7 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
       a->set_action_type(wait ? MetadataAction::REMASTER_SYNC : MetadataAction::REMASTER_ASYNC);
       a->set_remaster(true);
       a->set_distinct_id(distinct_id);
+      a->set_dest(to_machine);
 
       in.SerializeToString(a->mutable_input());
       a->add_readset(in.path());
@@ -269,6 +270,7 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
   }
   a->set_remaster(true);
   a->set_distinct_id(distinct_id);
+  a->set_dest(to_machine);
 
   MetadataAction::RemasterInput in;
   in.set_path(path.data(), path.size());

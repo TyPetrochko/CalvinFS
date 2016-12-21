@@ -232,6 +232,7 @@ message RemasterInput {
   required string path = 1;
   required uint32 old_master = 2;
   required uint32 new_master = 3;
+  required uint64 dest = 4; // where the map needs to be changed
 }
 message RemasterOutput {
   optional bool success = 1 [default = true];

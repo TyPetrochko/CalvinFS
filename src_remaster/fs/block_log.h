@@ -356,6 +356,15 @@ class BlockLogApp : public App {
           continue;        
         }
 
+        if (batch.entries(i).action_type() == MetadataAction::REMASTER
+            || batch.entries(i).action_type() == MetadataAction::REMASTER_FOLLOW
+            || batch.entries(i).action_type() == MetadataAction::REMASTER_ASYNC
+            || batch.entries(i).action_type() == MetadataAction::REMASTER_SYNC) {
+          MetadataAction::RemasterInput in;
+          in.ParseFromString(batch.entries(i).input());
+          recipients.insert(in.dest());
+        }
+
         for (int j = 0; j < batch.entries(i).readset_size(); j++) {
           if (config_->LookupReplicaByDir(batch.entries(i).readset(j), machine()) == batch.entries(i).origin()) {
             uint64 mds = config_->HashFileName(batch.entries(i).readset(j));
