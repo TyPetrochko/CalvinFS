@@ -377,9 +377,6 @@ class BlockLogApp : public App {
             if (config_->LookupReplicaByDir(batch.entries(i).readset(j), machine()) == batch.entries(i).origin()) {
               uint64 mds = config_->HashFileName(batch.entries(i).readset(j));
               recipients.insert(config_->LookupMetadataShard(mds, replica_));
-              LOG(ERROR) << "batch entry IS getting counted for recipient "<<batch.entries(i).distinct_id();
-            } else {
-              LOG(ERROR) << "batch entry not getting counted for recipient "<<batch.entries(i).distinct_id();
             }
           }
           for (int j = 0; j < batch.entries(i).writeset_size(); j++) {
