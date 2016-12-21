@@ -710,7 +710,7 @@ void MetadataStore::Run(Action* action) {
     MetadataAction::RemasterInput in;
     MetadataAction::RemasterOutput out;
     in.ParseFromString(action->input());
-    Remaster_Internal(context, in, &out);
+    config_->ChangeReplicaForPath(in.path(), in.new_master(), machine_);
     out.SerializeToString(action->mutable_output());
 
   } else {
