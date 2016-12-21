@@ -119,7 +119,6 @@ class BlockLogApp : public App {
     // Okay, finally, start main loop!
     going_ = true;
     while (go_.load()) {
-      LOG(ERROR) << "BLOCKLOG SPIN B";
       // Create new batch once per epoch.
       double next_epoch = GetTime() + 0.005;
 
@@ -262,7 +261,6 @@ class BlockLogApp : public App {
   virtual void Stop() {
     go_ = false;
     while (going_.load()) {
-      LOG(ERROR) << "BLOCKLOG SPIN C";
       usleep(10);
     }
   }
@@ -284,7 +282,6 @@ class BlockLogApp : public App {
   virtual void HandleMessage(Header* header, MessageBuffer* message) {
     // Don't run any RPCs before Start() is called.
     while (!going_.load()) {
-      LOG(ERROR) << "BLOCKLOG SPIN D";
       usleep(10);
       if (!go_.load()) {
         return;
@@ -427,7 +424,6 @@ class BlockLogApp : public App {
 
         bool got_it;
         do {
-          LOG(ERROR) << "BLOCKLOG SPIN E";
           got_it = fakebatches_.Lookup(fake_subbatch_id, &fake_subbatch);
           usleep(10);
         } while (got_it == false);

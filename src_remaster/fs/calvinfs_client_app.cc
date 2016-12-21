@@ -39,7 +39,6 @@ MessageBuffer* CalvinFSClientApp::GetMetadataEntry(const Slice& path) {
     header->set_data_ptr(reinterpret_cast<uint64>(&m));
     machine()->SendMessage(header, new MessageBuffer());
     while (m == NULL) {
-      LOG(ERROR) << "SPIN A";
       usleep(10);
       Noop<MessageBuffer*>(m);
     }
@@ -139,7 +138,6 @@ MessageBuffer* CalvinFSClientApp::AppendStringToFile(
 
   MessageBuffer* m = NULL;
   while (!channel->Pop(&m)) {
-    LOG(ERROR) << "SPIN C";
     // Wait for action to complete and be sent back.
     usleep(100);
   }
@@ -183,7 +181,6 @@ MessageBuffer* CalvinFSClientApp::ReadFile(const Slice& path) {
     }
     bool done = false;
     while (!done) {
-      LOG(ERROR) << "SPIN D";
       done = true;
       for (int i = 0; i < out.entry().file_parts_size(); i++) {
         Noop<MessageBuffer*>(blocks[i]);
@@ -275,7 +272,6 @@ MessageBuffer* CalvinFSClientApp::CopyFile(const Slice& from_path, const Slice& 
 
   MessageBuffer* m = NULL;
   while (!channel->Pop(&m)) {
-    LOG(ERROR) << "SPIN E";
     // Wait for action to complete and be sent back.
     usleep(100);
   }
@@ -329,7 +325,6 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
 
   MessageBuffer* m = NULL;
   while (!channel->Pop(&m)) {
-    LOG(ERROR) << "SPIN F";
     // Wait for action to complete and be sent back.
     usleep(100);
   }
