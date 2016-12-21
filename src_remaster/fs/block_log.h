@@ -403,6 +403,7 @@ class BlockLogApp : public App {
       uint64 block_id = header->misc_int(0);
       ActionBatch* batch = new ActionBatch();
       batch->ParseFromArray((*message)[0].data(), (*message)[0].size());
+      LOG(ERROR) << "putting "<<batch->entries_size()<<" entries in subbatch map on machine "<<machine()->machine_id();
       subbatches_.Put(block_id, batch);
     } else if (header->rpc() == "APPEND_MULTIREPLICA_ACTIONS") {
       MessageBuffer* m = NULL;
