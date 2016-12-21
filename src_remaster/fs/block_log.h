@@ -125,7 +125,8 @@ class BlockLogApp : public App {
       // Create batch (iff there are any pending requests).
       int count = queue_.Size();
       int remaster_count = remaster_queue_.Size();
-      if (count > 0 || remaster_count > 0) {
+      int remaster_postpone_count = remaster_postponed_.Size();
+      if (count > 0 || remaster_count > 0 || remaster_postpone_count > 0) {
         ActionBatch batch;
         uint64 actual_offset = 0;
         uint32 current_replica = config_->LookupReplica(machine()->machine_id());
@@ -318,6 +319,7 @@ class BlockLogApp : public App {
             // change master map at the end of the next epoch
             config_->SendIntrareplicaRemasterRequests(in, machine(), false);
           case MetadataAction::REMASTER_ASYNC:
+            LOG(ERROR) << "Added txn id "<< a->distinct_id()<<" with type "<< a->action_type() << " to the postponed queue";
             remaster_postponed_.Push(a);
             break;
           default:
