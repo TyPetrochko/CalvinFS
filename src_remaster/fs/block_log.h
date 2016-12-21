@@ -386,7 +386,6 @@ class BlockLogApp : public App {
             }
           }
         }
-        LOG(ERROR) << "machine "<<machine()->machine_id()<<" has action as part of batch with id "<<batch.entries(i).distinct_id();
 
         for (auto it = recipients.begin(); it != recipients.end(); ++it) {
           subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
