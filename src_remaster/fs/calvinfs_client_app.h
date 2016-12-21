@@ -207,7 +207,7 @@ class CalvinFSClientApp : public App {
     Spin(1);
 
     string tld("/a" + UInt64ToString(machine()->machine_id()));
-    int dirs = 1000;
+    int dirs = 100;
     int files = 10;
 
     // Put files into second-level dir.
