@@ -341,7 +341,6 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   set<uint32> replica_involved;
   for (int i = 0; i < action->involved_replicas_size(); i++) {
     replica_involved.insert(action->involved_replicas(i));
-    LOG(ERROR) << "replica involved: " << IntToString(action->involved_replicas(i));
   }
 
   uint32 master;
@@ -367,6 +366,8 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
       uint32 old_master = it->second;
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
+        LOG(ERROR) << "Remastering "<<it->first<<" from "<<IntToString(old_master)<<" to "
+        <<IntToString(master)<<" sending from "<<machine_->machine_id()<<" to "<<IntToString(machine_sent);
         // this is the entry point for remastering
         config_->SendRemasterRequest(machine_, machine_sent, it->first, old_master, master, 0);
       }
