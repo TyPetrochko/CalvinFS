@@ -173,8 +173,8 @@ class BlockLogApp : public App {
           MetadataAction::RemasterInput in;
           in.ParseFromString(a->input());
           LOG(ERROR) << "HACK CHANGING MAP FROM BLOCK_LOG on machine "<<machine()->machine_id()<<" for path /"<<in.path()<<" changing master "<<in.old_master()<<"->"<<in.new_master();
-          config_->ChangeReplicaForPath(in.path(), in.new_master(), machine());
-          // batch.mutable_entries()->AddAllocated(a);
+          // config_->ChangeReplicaForPath(in.path(), in.new_master(), machine());
+          batch.mutable_entries()->AddAllocated(a);
         }
 
         // Move all from remaster_postponed into remaster_queue,
@@ -386,10 +386,10 @@ class BlockLogApp : public App {
             }
           }
         }
+      }
 
-        for (auto it = recipients.begin(); it != recipients.end(); ++it) {
-          subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
-        }
+      for (auto it = recipients.begin(); it != recipients.end(); ++it) {
+        subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
       }
 
       for (auto it = mds_.begin(); it != mds_.end(); ++it) {
