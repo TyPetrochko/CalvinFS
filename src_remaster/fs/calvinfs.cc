@@ -5,6 +5,7 @@
 #include "fs/calvinfs.h"
 
 #include <map>
+#include <set>
 #include <stack>
 #include "common/utils.h"
 #include "components/log/log_app.h"
@@ -20,6 +21,7 @@
 #include "machine/cluster_config.h"
 #include "machine/machine.h"
 
+using std::set;
 using std::map;
 using std::stack;
 using std::pair;
