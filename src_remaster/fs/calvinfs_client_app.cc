@@ -225,6 +225,7 @@ void CalvinFSClientApp::RouteAction(Action* a) {
   // don't modify action, especially channel_name which determines how results
   // actually get back to the client
   uint32 dest = metadata_->GetMachineForReplica(a);
+  LOG(ERROR) << "Rerouting action to machine "<<IntToString(dest);
   Header* header = new Header();
   header->set_from(machine()->machine_id());
   header->set_to(dest);

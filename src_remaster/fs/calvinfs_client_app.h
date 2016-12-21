@@ -149,7 +149,9 @@ class CalvinFSClientApp : public App {
           header->misc_string(1)));
 
     } else if (header->rpc() == "ACTION") {
-
+      Action* a = new Action();
+      a->ParseFromArray((*message)[0].data(), (*message)[0].size());
+      RouteAction(a);
 
     // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
