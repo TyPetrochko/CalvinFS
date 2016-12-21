@@ -9,6 +9,7 @@
 #include "fs/fs.h"
 #include "fs/calvinfs_config.pb.h"
 #include "common/source.h"
+#include "fs/metadata.pb.h"
 
 string TopDir(const string& path);
 

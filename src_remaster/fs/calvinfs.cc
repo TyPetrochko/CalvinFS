@@ -16,7 +16,6 @@
 #include "components/store/versioned_kvstore.h"
 #include "fs/block_store.h"
 #include "fs/calvinfs_config.pb.h"
-#include "fs/metadata.pb.h"
 #include "fs/metadata_store.h"
 #include "machine/cluster_config.h"
 #include "machine/machine.h"
