@@ -353,8 +353,6 @@ class BlockLogApp : public App {
         header->add_misc_int(block_id);
         header->add_misc_int(batch_size);
         machine()->SendMessage(header, new MessageBuffer());
-      }else {
-        // LOG(ERROR)<<"Didn't send SUBMIT b/c"<<config_->LookupReplica(message_from_)<<" != "<<replica_;
       }
 
       // Forward sub-batches to relevant readers (same replica only).
