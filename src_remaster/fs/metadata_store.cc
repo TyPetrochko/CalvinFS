@@ -637,7 +637,7 @@ void MetadataStore::Run(Action* action) {
     delete context;
     return;
   }
-//LOG(ERROR) << "Machine: "<<machine_id_<<"****************** MetadataStore::Run:*******(will execute it)" << action->version()<<" distinct id is:"<<action->distinct_id();
+  LOG(ERROR) << "Machine: "<<machine_id_<<"****************** MetadataStore::Run:*******(will execute it)" << action->action_type()<<" distinct id is:"<<action->distinct_id();
   // Execute action.
   MetadataAction::Type type =
       static_cast<MetadataAction::Type>(action->action_type());
