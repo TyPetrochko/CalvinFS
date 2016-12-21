@@ -148,27 +148,6 @@ class CalvinFSClientApp : public App {
           header->misc_string(0),
           header->misc_string(1)));
 
-    // INTERNAL file remaster
-    } else if (header->rpc() == "REMASTER") {
-      Action* a = new Action();
-      a->ParseFromArray((*message)[0].data(), (*message)[0].size());
-      MetadataAction::RemasterInput in;
-      in.ParseFromString(a->input());
-      // no reply expected
-      RemasterFile(in.path(), in.old_master(), in.new_master());
-
-    // INTRA-REPLICA (very internal) file remaster
-    } else if (header->rpc() == "REMASTER_INTRAREPLICA") {
-      Action* a = new Action();
-      a->ParseFromArray((*message)[0].data(), (*message)[0].size());
-      MetadataAction::RemasterInput in;
-      in.ParseFromString(a->input());
-      // reply is expected
-      machine()->SendReplyMessage(header, LocalRemasterFile(
-          in.path(),
-          in.old_master(),
-          in.new_master()));
-
     // Callback for recording latency stats
     } else if (header->rpc() == "CB") {
       double end = GetTime();
