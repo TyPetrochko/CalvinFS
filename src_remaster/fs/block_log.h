@@ -364,13 +364,11 @@ class BlockLogApp : public App {
           continue;        
         }
 
-        if (batch.entries(i).action_type() == MetadataAction::REMASTER
-            || batch.entries(i).action_type() == MetadataAction::REMASTER_FOLLOW
-            || batch.entries(i).action_type() == MetadataAction::REMASTER_ASYNC
-            || batch.entries(i).action_type() == MetadataAction::REMASTER_SYNC) {
+        if (batch.entries(i).remaster()) {
           MetadataAction::RemasterInput in;
           in.ParseFromString(batch.entries(i).input());
           recipients.insert(in.dest());
+          LOG(ERROR) << "Remastering request added to batch";
         } else {
 
           for (int j = 0; j < batch.entries(i).readset_size(); j++) {
