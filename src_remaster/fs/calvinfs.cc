@@ -170,7 +170,8 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
 void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::RemasterInput in, Machine* machine, bool wait) {
   // don't change local map. that happens when the remaster txn is executed.
 
-  stack<AtomicQueue<MessageBuffer*>*> channels;
+  atomic<int> ack_counter;
+  int to_expect = 0;
 
   // send this to every other machine on this replica
   for (uint32 machine_index = 0; machine_index < GetPartitionsPerReplica(); machine_index++) {
@@ -178,10 +179,6 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
     if (to_machine != machine->machine_id()) {
       uint64 distinct_id = machine->GetGUID();
       string channel_name = "action-result-" + UInt64ToString(distinct_id);
-      auto channel = machine->DataChannel(channel_name);
-      if (wait) {
-        channels.push(channel);
-      }
 
       Action* a = new Action();
       a->set_client_machine(machine->machine_id());
@@ -198,6 +195,10 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
       header->set_type(Header::RPC);
       header->set_app("blocklog");
       header->set_rpc("APPEND");
+      if (wait) {
+        to_expect++;
+        header->set_ack_counter(reinterpret_cast<uint64>(ack_counter));
+      }
       string* block = new string();
       a->SerializeToString(block);
       machine->SendMessage(header, new MessageBuffer(Slice(*block)));
@@ -205,14 +206,8 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
   }
 
   // now that all RPCs have been sent, wait for responses
-  while (channels.size() > 0) {
-    auto channel = channels.top();
-    channels.pop();
-    MessageBuffer* m = NULL;
-    while (!channel->Pop(&m)) {
-      // Wait for action to complete and be sent back.
-      usleep(100);
-    }
+  while (ack_counter.load() < to_expect) {
+    usleep(10);
   }
 }
 
