@@ -222,7 +222,7 @@ void CalvinFSConfigMap::SendRemasterFollows(MetadataAction::RemasterInput in, Ma
   for (uint32 replica = 0; replica < GetReplicas(); replica++) {
     if (replica != LookupReplica(machine->machine_id())) {
       // forward to everyone else
-      uint32 dest = replica * GetPartitionsPerReplica() + rand() % machines_per_replica;
+      uint32 dest = replica * GetPartitionsPerReplica() + rand() % GetPartitionsPerReplica();
       LOG(ERROR) << "Sent REMASTER_FOLLOW to node " << dest;
       SendRemasterRequest(machine, dest, in.path(), in.old_master(), in.new_master(), 1);
     }
