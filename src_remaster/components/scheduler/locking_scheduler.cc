@@ -58,8 +58,6 @@ void LockingScheduler::MainLoopBody() {
         }
       }
     }
-    
-    LOG(ERROR) << "Acquired locks for txn "<<action->distinct_id()<<" on machine "<< local_replica_;
 
     // If all read and write locks were immediately acquired, this action
     // is ready to run.

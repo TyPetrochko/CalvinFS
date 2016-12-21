@@ -388,6 +388,7 @@ class BlockLogApp : public App {
         }
 
         for (auto it = recipients.begin(); it != recipients.end(); ++it) {
+          LOG(ERROR) << "Subbatch sent to machine "<<(*it)<<" with txn number "<<batch.entries(i).distinct_id();
           subbatches[*it].add_entries()->CopyFrom(batch.entries(i));
         }
       }
