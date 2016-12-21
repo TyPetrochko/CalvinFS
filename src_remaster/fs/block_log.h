@@ -413,9 +413,6 @@ class BlockLogApp : public App {
       uint64 block_id = header->misc_int(0);
       ActionBatch* batch = new ActionBatch();
       batch->ParseFromArray((*message)[0].data(), (*message)[0].size());
-      for (int i = 0; i < batch->entries_size(); i++) {
-        LOG(ERROR) << "Subbatch received at machine "<<machine()->machine_id()<<" containing txn "<<batch->entries(i).distinct_id();
-      }
       subbatches_.Put(block_id, batch);
     } else if (header->rpc() == "APPEND_MULTIREPLICA_ACTIONS") {
       MessageBuffer* m = NULL;
@@ -642,6 +639,7 @@ class BlockLogApp : public App {
       *a = subbatch_->mutable_entries()->ReleaseLast();
       (*a)->set_version(subbatch_version_ + (*a)->version_offset());
       (*a)->clear_version_offset();
+      LOG(ERROR) << "Extracted a subbatch entry on machine "<<log_->replica_<<" with id "<< (*a)->distinct_id();
       if (subbatch_->entries_size() == 0) {
         // Okay, NOW the batch is empty.
         delete subbatch_;
