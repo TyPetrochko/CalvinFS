@@ -154,12 +154,12 @@ class BlockLogApp : public App {
             a->set_version_offset(actual_offset++);
             a->set_origin(current_replica);
             batch.mutable_entries()->AddAllocated(a);
+            //machine()->SendReplyMessage();
           } else {
             // if not all files are mastered here, forward up to the client to
             // do some forwarding or remastering.
             SendUpToClient(a);
           }
-          // TODO If it collides, send it as an "action RPC" to client app
         }
 
         // copy remaster actions into batch
@@ -326,8 +326,13 @@ class BlockLogApp : public App {
             LOG(FATAL) << "Unknown remaster command";
         }
       } else{
+        if (a->action_type() == MetadataAction::RENAME) {
+          // reply immediately
+          machine()->SendReplyMessage(header, new MessageBuffer(*a));
+        } else {
         // regular action!
         queue_.Push(a);
+        }
       }
       // LOG(ERROR) << "Machine: "<<machine()->machine_id() <<" =>Block log recevie a APPEND request. distinct id is:"<< a->distinct_id()<<" from machine:"<<header->from();
     } else if (header->rpc() == "BATCH") {
