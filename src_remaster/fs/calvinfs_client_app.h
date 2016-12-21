@@ -214,6 +214,7 @@ class CalvinFSClientApp : public App {
     double start = GetTime();
     for (int i = 0; i < files; i++) {
       string file = "/d" + IntToString(i);
+      LOG(ERROR) << "[" << machine->machine_id() << "] " << "about to add files";
       for (int j = 0; j < dirs; j++) {
         BackgroundCreateFile(tld + "/b" + IntToString(j) + file);
       }
