@@ -295,14 +295,19 @@ class BlockLogApp : public App {
             LOG(ERROR) << "Done synchronously updating entire replica";
             // now send REMASTER_FOLLOWS to other replicas
             config_->SendRemasterFollows(in, machine());
+            remaster_queue_.Push(a);
+            break;
           case MetadataAction::REMASTER_SYNC:
             // sent to every other node on a replica
             // change master-map at the end of this epoch
             remaster_queue_.Push(a);
+            // notify when complete
+            machine()->SendReplyMessage(header, new MessageBuffer());
             break;
           case MetadataAction::REMASTER_FOLLOW:
             // change master map at the end of the next epoch
             config_->SendIntrareplicaRemasterRequests(in, machine(), false);
+          case MetadataAction::REMASTER_ASYNC:
             remaster_postponed_.Push(a);
             break;
           default:
