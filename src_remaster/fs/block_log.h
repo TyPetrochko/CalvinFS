@@ -175,6 +175,7 @@ class BlockLogApp : public App {
         // so they will be put with the next batch.
         Action* remaster_action = NULL;
         while (remaster_postponed_.Pop(&remaster_action)) {
+          LOG(ERROR) << "Postponed txn with ID "<<remaster_action->distinct_id()<<" and type "<<remaster_action->action_type()<<" will soon be executed";
           remaster_queue_.Push(remaster_action);
         }
 
