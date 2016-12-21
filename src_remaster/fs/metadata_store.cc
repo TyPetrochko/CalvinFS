@@ -359,7 +359,7 @@ uint32 MetadataStore::GetMachineForReplica(Action* action, string app_name) {
       uint32 old_master = it->second;
       if (old_master != master) {
         uint32 machine_sent = old_master * machines_per_replica_ + rand() % machines_per_replica_;
-        config_->SendRemasterRequest(machine_sent, app_name, it->first, old_master, master, 0);
+        config_->SendRemasterRequest(machine_sent, it->first, old_master, master, 0);
       }
     }
   }
