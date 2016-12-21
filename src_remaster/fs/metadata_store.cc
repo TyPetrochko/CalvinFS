@@ -257,7 +257,6 @@ class DistributedExecutionContext : public ExecutionContext {
           MessageBuffer* m = NULL;
           // Get results.
           while (!channel->Pop(&m)) {
-            LOG(ERROR) << "METALOG SPIN A";
             usleep(10);
           }
           MapProto remote_read;
