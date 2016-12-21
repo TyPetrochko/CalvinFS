@@ -47,7 +47,7 @@ message Action {
   optional uint64 version_offset = 32;
 
   // everything is single-replica now
-  required bool single_replica = 41;  
+  // required bool single_replica = 41;  
 
   optional uint32 origin = 42 [default = 0];
 
