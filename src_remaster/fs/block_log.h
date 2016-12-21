@@ -168,7 +168,12 @@ class BlockLogApp : public App {
           a->set_version_offset(actual_offset++);
           a->set_origin(current_replica);
           LOG(ERROR) << "Adding action "<<IntToString(a->distinct_id())<<" to the batch";
-          batch.mutable_entries()->AddAllocated(a);
+          // remaster it right here, because adding it to the batch doesn't work
+          LOG(ERROR) << "HACK CHANGING MAP FROM BLOCK_LOG";
+          MetadataAction::RemasterInput in;
+          in.ParseFromString(a->input());
+          config_->ChangeReplicaForPath(in.path(), in.new_master(), in.old_master());
+          // batch.mutable_entries()->AddAllocated(a);
         }
 
         // Move all from remaster_postponed into remaster_queue,
