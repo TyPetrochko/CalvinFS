@@ -874,8 +874,6 @@ void LatencyExperimentAppend() {
   MessageBuffer* LS(const Slice& path);
   MessageBuffer* CopyFile(const Slice& from_path, const Slice& to_path);
   MessageBuffer* RenameFile(const Slice& from_path, const Slice& to_path);
-  void RemasterFile(string path, uint32 old_master, uint32 new_master);
-  MessageBuffer* LocalRemasterFile(string path, uint32 old_master, uint32 new_master);
 
   void BackgroundCreateFile(const Slice& path, FileType type = DATA) {
     Header* header = new Header();

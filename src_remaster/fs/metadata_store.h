@@ -68,11 +68,6 @@ class MetadataStore : public Store {
       ExecutionContext* context,
       const MetadataAction::RenameInput& in,
       MetadataAction::RenameOutput* out);
-  
-  void Remaster_Internal(
-      ExecutionContext* context,
-      const MetadataAction::RemasterInput& in,
-      MetadataAction::RemasterOutput* out);
 
   void Lookup_Internal(
       ExecutionContext* context,

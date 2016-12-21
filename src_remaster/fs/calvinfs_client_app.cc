@@ -326,9 +326,4 @@ MessageBuffer* CalvinFSClientApp::RenameFile(const Slice& from_path, const Slice
   }
 }
 
-MessageBuffer* CalvinFSClientApp::LocalRemasterFile(string path, uint32 old_master, uint32 new_master) {
-  config_->ChangeReplicaForPath(path, new_master, machine());
-  return new MessageBuffer();
-}
-
 
