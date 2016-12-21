@@ -341,7 +341,11 @@ uint32 MetadataStore::GetMachineForReplica(Action* action) {
   set<uint32> replica_involved;
   for (int i = 0; i < action->involved_replicas_size(); i++) {
     replica_involved.insert(action->involved_replicas(i));
+    if (action->action_type() == MetadataAction::CREATE_FILE) {
+      LOG(ERROR)<<"Replica "<<IntToString(action->involved_replicas(i))<<" is involved";
+    }
   }
+  LOG(ERROR)<<"done";
 
   uint32 master;
 

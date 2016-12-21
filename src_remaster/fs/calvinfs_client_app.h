@@ -242,7 +242,6 @@ class CalvinFSClientApp : public App {
         usleep(10);
       }
     }
-    LOG(ERROR) << "Created 1k files in the root directory";
 
     // 1k appends to random files.
     Spin(1);
