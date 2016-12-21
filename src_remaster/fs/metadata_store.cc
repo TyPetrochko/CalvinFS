@@ -175,6 +175,11 @@ class DistributedExecutionContext : public ExecutionContext {
     aborted_ = false;
     origin_ = action->origin();
 
+    bool is_remaster = action.action_type() == MetadataAction::REMASTER
+        || action.action_type() == MetadataAction::REMASTER_FOLLOW
+        || action.action_type() == MetadataAction::REMASTER_ASYNC
+        || action.action_type() == MetadataAction::REMASTER_SYNC;
+
     data_channel_version = action->distinct_id();
     // LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext received a txn:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
     // Look up what replica we're at.
@@ -183,79 +188,87 @@ class DistributedExecutionContext : public ExecutionContext {
     // Figure out what machines are readers (and perform local reads).
     reader_ = false;
     set<pair<uint64, uint32>> remote_readers;
-    for (int i = 0; i < action->readset_size(); i++) {
-      uint64 mds = config_->HashFileName(action->readset(i));
-      uint64 machine = config_->LookupMetadataShard(mds, replica_);
-      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i), machine_) == origin_)) {
-        // Local read.
-        if (!store_->Get(action->readset(i),
-                         version_,
-                         &reads_[action->readset(i)])) {
-          reads_.erase(action->readset(i));
-        }
-        reader_ = true;
-      } else {
-        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
-        remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i), machine_)));
-      }
-    }
 
     // Figure out what machines are writers.
     writer_ = false;
     set<pair<uint64, uint32>> remote_writers;
 
-    for (int i = 0; i < action->writeset_size(); i++) {
-      uint64 mds = config_->HashFileName(action->writeset(i));
-      uint64 machine = config_->LookupMetadataShard(mds, replica_);
-      if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i), machine_) == origin_)) {
-        writer_ = true;
-        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
-      } else {
-        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
-        remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i), machine_)));
-      }
-    }
+    if (is_remaster) {
+      // local reader and writer only.
+      writer_ = true;
+      reader_ = true;
 
-    // If any reads were performed locally, broadcast them to writers.
-    if (reader_) {
-      MapProto local_reads;
-      for (auto it = reads_.begin(); it != reads_.end(); ++it) {
-        MapProto::Entry* e = local_reads.add_entries();
-        e->set_key(it->first);
-        e->set_value(it->second);
-      }
-      for (auto it = remote_writers.begin(); it != remote_writers.end(); ++it) {
-        Header* header = new Header();
-        header->set_from(machine_->machine_id());
-        header->set_to(it->first);
-        header->set_type(Header::DATA);
-        header->set_data_channel("action-" + UInt32ToString(it->second) + "-" + UInt64ToString(data_channel_version));
-        machine_->SendMessage(header, new MessageBuffer(local_reads));
-        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext send local read:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  to:"<<it->first;
-      }
-    }
-
-    // If any writes will be performed locally, wait for all remote reads.
-    if (writer_) {
-      // Get channel.
-      AtomicQueue<MessageBuffer*>* channel =
-          machine_->DataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
-      for (uint32 i = 0; i < remote_readers.size(); i++) {
-        MessageBuffer* m = NULL;
-        // Get results.
-        while (!channel->Pop(&m)) {
-          usleep(10);
-        }
-        MapProto remote_read;
-        remote_read.ParseFromArray((*m)[0].data(), (*m)[0].size());
-        for (int j = 0; j < remote_read.entries_size(); j++) {
-          CHECK(reads_.count(remote_read.entries(j).key()) == 0);
-          reads_[remote_read.entries(j).key()] = remote_read.entries(j).value();
+    } else {
+      for (int i = 0; i < action->readset_size(); i++) {
+        uint64 mds = config_->HashFileName(action->readset(i));
+        uint64 machine = config_->LookupMetadataShard(mds, replica_);
+        if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->readset(i), machine_) == origin_)) {
+          // Local read.
+          if (!store_->Get(action->readset(i),
+                           version_,
+                           &reads_[action->readset(i)])) {
+            reads_.erase(action->readset(i));
+          }
+          reader_ = true;
+        } else {
+          //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_readers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->readset(i): "<<config_->LookupReplicaByDir(action->readset(i))<<"  . However, origin is: "<<origin_;
+          remote_readers.insert(make_pair(machine, config_->LookupReplicaByDir(action->readset(i), machine_)));
         }
       }
-      // Close channel.
-      machine_->CloseDataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
-      //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
+
+      for (int i = 0; i < action->writeset_size(); i++) {
+        uint64 mds = config_->HashFileName(action->writeset(i));
+        uint64 machine = config_->LookupMetadataShard(mds, replica_);
+        if ((machine == machine_->machine_id()) && (config_->LookupReplicaByDir(action->writeset(i), machine_) == origin_)) {
+          writer_ = true;
+          //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(is local writer):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
+        } else {
+          //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext(add remote_writers):: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  config_->LookupReplicaByDir(action->writeset(i)): "<<config_->LookupReplicaByDir(action->writeset(i))<<"  . However, origin is: "<<origin_;
+          remote_writers.insert(make_pair(machine, config_->LookupReplicaByDir(action->writeset(i), machine_)));
+        }
+      }
+
+      // If any reads were performed locally, broadcast them to writers.
+      if (reader_) {
+        MapProto local_reads;
+        for (auto it = reads_.begin(); it != reads_.end(); ++it) {
+          MapProto::Entry* e = local_reads.add_entries();
+          e->set_key(it->first);
+          e->set_value(it->second);
+        }
+        for (auto it = remote_writers.begin(); it != remote_writers.end(); ++it) {
+          Header* header = new Header();
+          header->set_from(machine_->machine_id());
+          header->set_to(it->first);
+          header->set_type(Header::DATA);
+          header->set_data_channel("action-" + UInt32ToString(it->second) + "-" + UInt64ToString(data_channel_version));
+          machine_->SendMessage(header, new MessageBuffer(local_reads));
+          //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext send local read:: version is:"<< version_<<"   data_channel_version:"<<data_channel_version<<"  to:"<<it->first;
+        }
+      }
+
+      // If any writes will be performed locally, wait for all remote reads.
+      if (writer_) {
+        // Get channel.
+        AtomicQueue<MessageBuffer*>* channel =
+            machine_->DataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
+        for (uint32 i = 0; i < remote_readers.size(); i++) {
+          MessageBuffer* m = NULL;
+          // Get results.
+          while (!channel->Pop(&m)) {
+            usleep(10);
+          }
+          MapProto remote_read;
+          remote_read.ParseFromArray((*m)[0].data(), (*m)[0].size());
+          for (int j = 0; j < remote_read.entries_size(); j++) {
+            CHECK(reads_.count(remote_read.entries(j).key()) == 0);
+            reads_[remote_read.entries(j).key()] = remote_read.entries(j).value();
+          }
+        }
+        // Close channel.
+        machine_->CloseDataChannel("action-" + UInt32ToString(origin_) + "-" + UInt64ToString(data_channel_version));
+        //LOG(ERROR) << "Machine: "<<machine_->machine_id()<< "  DistributedExecutionContext already got all results: version is:"<< version_<<"   data_channel_version:"<<data_channel_version;
+      }
     }
   }
 
