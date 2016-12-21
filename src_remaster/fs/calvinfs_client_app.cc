@@ -77,11 +77,12 @@ MessageBuffer* CalvinFSClientApp::CreateFile(const Slice& path, FileType type) {
   machine()->SendMessage(header, new MessageBuffer(Slice(*block)));
 
   MessageBuffer* m = NULL;
-  LOG(ERROR) << "waiting for create to complete on machine "<<machine()->machine_id();
+  LOG(ERROR) << "waiting for create with id "<<distinct_id<<" to complete on machine "<<machine()->machine_id();
   while (!channel->Pop(&m)) {
     // Wait for action to complete and be sent back.
     usleep(100);
   }
+  LOG(ERROR) << "create "<<distinct_id<<" completed on machine "<<machine()->machine_id();
 
   Action result;
   result.ParseFromArray((*m)[0].data(), (*m)[0].size());
