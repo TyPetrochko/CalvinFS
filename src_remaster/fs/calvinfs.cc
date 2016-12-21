@@ -170,7 +170,7 @@ void CalvinFSConfigMap::ChangeReplicaForPath(string path, uint32 new_master, Mac
 void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::RemasterInput in, Machine* machine, bool wait) {
   // don't change local map. that happens when the remaster txn is executed.
 
-  atomic<int> ack_counter;
+  atomic<int> ack_counter = 0;
   int to_expect = 0;
 
   // send this to every other machine on this replica
@@ -197,7 +197,7 @@ void CalvinFSConfigMap::SendIntrareplicaRemasterRequests(MetadataAction::Remaste
       header->set_rpc("APPEND");
       if (wait) {
         to_expect++;
-        header->set_ack_counter(reinterpret_cast<uint64>(ack_counter));
+        header->set_ack_counter(reinterpret_cast<uint64>(&ack_counter));
       }
       string* block = new string();
       a->SerializeToString(block);
