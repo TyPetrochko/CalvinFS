@@ -263,7 +263,6 @@ void CalvinFSConfigMap::SendRemasterRequest(Machine* machine, uint32 to_machine,
       LOG(FATAL) << "Bad remaster type in SendRemasterRequest";
   }
   a->set_remaster(true);
-  a->set_action_type(MetadataAction::REMASTER_FOLLOW);
   a->set_distinct_id(distinct_id);
 
   MetadataAction::RemasterInput in;
