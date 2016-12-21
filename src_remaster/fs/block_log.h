@@ -291,6 +291,7 @@ class BlockLogApp : public App {
           case MetadataAction::REMASTER:
             // sent to some node on old master.
             // send synchronously to other machines on this replica
+            LOG(ERROR) << "About to synchronously update entire replica";
             config_->SendIntrareplicaRemasterRequests(in, machine(), true);
             LOG(ERROR) << "Done synchronously updating entire replica";
             // now send REMASTER_FOLLOWS to other replicas
